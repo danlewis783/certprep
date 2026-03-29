@@ -1,3 +1,5 @@
+# CertPrep is available under the GPL v3 license.  See the LICENSE file for more info.
+
 ## 1. Architectural & Language Requirements
 * **Java 11 Standard:**
 * **Code Structure:**
