@@ -1,4 +1,4 @@
-package certprep;
+package acme.certprep;
 
 class SessionRow {
     int chapter, question, time, lineIndex;

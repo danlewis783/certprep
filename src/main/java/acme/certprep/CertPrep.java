@@ -1,4 +1,4 @@
-package certprep;
+package acme.certprep;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +56,8 @@ public class CertPrep {
                 SwingUtilities.invokeLater(() -> new TestUI(config, bank, session));
             }
         } catch (Exception e) {
-            System.err.println("Initialization Error: " + e.getMessage());
+            e.printStackTrace(System.err);
+//            System.err.println("Initialization Error: " + e.getMessage());
             System.exit(1);
         }
     }

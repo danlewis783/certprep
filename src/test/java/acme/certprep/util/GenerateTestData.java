@@ -1,4 +1,4 @@
-package certprep.util;
+package acme.certprep.util;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

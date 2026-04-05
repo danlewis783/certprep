@@ -1,4 +1,4 @@
-package certprep;
+package acme.certprep;
 
 import java.io.IOException;
 import java.nio.file.Files;

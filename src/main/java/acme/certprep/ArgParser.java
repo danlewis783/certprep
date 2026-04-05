@@ -1,4 +1,4 @@
-package certprep;
+package acme.certprep;
 
 class ArgParser {
     Integer chapter = null, start = null, end = null;

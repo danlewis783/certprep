@@ -1,4 +1,4 @@
-package certprep;
+package acme.certprep;
 
 import java.util.Arrays;
 import java.util.List;

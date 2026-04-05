@@ -1,4 +1,4 @@
-package certprep.util;
+package acme.certprep.util;
 
 class TestData {
     int chapter, question;
