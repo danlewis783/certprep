@@ -13,6 +13,12 @@ dependencies {
     implementation(libs.guava)
 }
 
+val toolsSourceSet = sourceSets.create("tools") {
+    java.srcDir("src/tools/java")
+    compileClasspath += sourceSets["main"].output + configurations["compileClasspath"]
+    runtimeClasspath += output + compileClasspath
+}
+
 testing {
     suites {
         // Configure the built-in test suite
@@ -36,4 +42,11 @@ application {
 
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
+}
+
+tasks.register<JavaExec>("generateTestData") {
+    group = "tools"
+    description = "Generate local sample CertPrep data"
+    classpath = toolsSourceSet.runtimeClasspath
+    mainClass.set("acme.certprep.util.GenerateTestData")
 }
