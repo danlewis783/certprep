@@ -1,4 +1,4 @@
-package acme.certprep;
+package acme.certprep.ui;
 
 import javax.swing.*;
 import java.awt.*;

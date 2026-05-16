@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-class SessionManager {
+public class SessionManager {
     Path sessionFile;
 
     SessionManager(ArgParser config) throws IOException {
@@ -43,7 +43,7 @@ class SessionManager {
         return r;
     }
 
-    static void upd(ArgParser cfg, SessionRow r, boolean s) throws IOException {
+    public static void upd(ArgParser cfg, SessionRow r, boolean s) throws IOException {
         Path p = resolvePath(cfg.sessionDir, cfg.reviewFile);
         List<String> l = Files.readAllLines(p);
         String[] c = CertPrep.parseCSVLine(l.get(r.lineIndex));
@@ -96,7 +96,7 @@ class SessionManager {
         }
     }
 
-    void logAnswer(QuestionInfo q, String ua, int et, boolean ic) {
+    public void logAnswer(QuestionInfo q, String ua, int et, boolean ic) {
         try {
             Files.writeString(sessionFile, String.format("%d,%d,\"%s\",true,%d,%b,false\n", q.ch, q.q, ua, et, ic), StandardOpenOption.APPEND);
         } catch (IOException e) {

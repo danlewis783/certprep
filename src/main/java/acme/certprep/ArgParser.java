@@ -1,10 +1,11 @@
 package acme.certprep;
 
-class ArgParser {
+public class ArgParser {
     Integer chapter = null, start = null, end = null;
     String dataDir = System.getProperty("user.home") + "/.certprep/data";
     String sessionDir = System.getProperty("user.home") + "/.certprep/sessions";
-    String reviewFile = null, gradeFile = null;
+    String reviewFile = null;
+    String gradeFile = null;
     boolean testMode = false;
     boolean showHelp = false;
     boolean interactive = false;
@@ -70,5 +71,13 @@ class ArgParser {
                 throw new IllegalArgumentException("--test mode requires --chapter, --start, and --end parameters.");
             }
         }
+    }
+
+    public String getDataDir() {
+        return dataDir;
+    }
+
+    public String getReviewFile() {
+        return reviewFile;
     }
 }

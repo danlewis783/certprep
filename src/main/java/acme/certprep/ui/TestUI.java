@@ -1,5 +1,9 @@
-package acme.certprep;
+package acme.certprep.ui;
 
+import acme.certprep.ArgParser;
+import acme.certprep.QuestionBank;
+import acme.certprep.QuestionInfo;
+import acme.certprep.SessionManager;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Paths;
@@ -26,7 +30,7 @@ class TestUI {
         this.config = config;
         this.bank = bank;
         this.session = session;
-        this.totalT = bank.questions.size() * 108;
+        this.totalT = bank.size() * 108;
         frame = new JFrame();
         frame.setUndecorated(true);
         GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
@@ -44,7 +48,7 @@ class TestUI {
         tBar = new JProgressBar(0, totalT);
         tBar.setStringPainted(true);
         tBar.setForeground(new Color(100, 100, 255));
-        cBar = new JProgressBar(0, bank.questions.size());
+        cBar = new JProgressBar(0, bank.size());
         cBar.setStringPainted(true);
         pacingPanel.add(qBar);
         pacingPanel.add(tBar);
@@ -88,18 +92,18 @@ class TestUI {
         tBar.setValue(Math.min(tSec, totalT));
         tBar.setString("Total: " + tSec + "s");
         cBar.setValue(idx);
-        cBar.setString("Done: " + idx + "/" + bank.questions.size());
-        double cP = (double) idx / bank.questions.size();
+        cBar.setString("Done: " + idx + "/" + bank.size());
+        double cP = (double) idx / bank.size();
         double tP = (double) tSec / totalT;
-        cBar.setForeground(cP > tP ? Color.GREEN : (tP - cP <= (1.0 / bank.questions.size()) ? Color.YELLOW : Color.RED));
+        cBar.setForeground(cP > tP ? Color.GREEN : (tP - cP <= (1.0 / bank.size()) ? Color.YELLOW : Color.RED));
     }
 
     private void load() {
-        QuestionInfo q = bank.questions.get(idx);
-        imageLabel.setIcon(new ImageIcon(Paths.get(config.dataDir, String.format("ch%02d-q%02d.png", q.ch, q.q)).toString()));
+        QuestionInfo q = bank.get(idx);
+        imageLabel.setIcon(new ImageIcon(Paths.get(config.getDataDir(), String.format("ch%02d-q%02d.png", q.getChapter(), q.getQuestion())).toString()));
         checkboxPanel.removeAll();
         boxes.clear();
-        for (String o : q.p) {
+        for (String o : q.getPossibleAnswers()) {
             JCheckBox b = new JCheckBox(o);
             b.setFocusPainted(false);
             boxes.add(b);
@@ -111,11 +115,11 @@ class TestUI {
     }
 
     private void next() {
-        QuestionInfo q = bank.questions.get(idx);
+        QuestionInfo q = bank.get(idx);
         List<String> s = new ArrayList<>();
         for (JCheckBox b : boxes) if (b.isSelected()) s.add(b.getText());
-        session.logAnswer(q, String.join(",", s), qSec, String.join(",", s).equals(q.a));
-        if (idx == bank.questions.size() - 1) System.exit(0);
+        session.logAnswer(q, String.join(",", s), qSec, String.join(",", s).equals(q.getAnswer()));
+        if (idx == bank.size() - 1) System.exit(0);
         else {
             idx++;
             load();

@@ -1,5 +1,8 @@
-package acme.certprep;
+package acme.certprep.ui;
 
+import acme.certprep.ArgParser;
+import acme.certprep.SessionManager;
+import acme.certprep.SessionRow;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -23,7 +26,7 @@ class ReviewUI {
     ReviewUI(ArgParser config, List<SessionRow> rows) {
         this.config = config;
         this.rows = rows;
-        frame = new JFrame("JavaPractice Review Mode - " + config.reviewFile);
+        frame = new JFrame("JavaPractice Review Mode - " + config.getReviewFile());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1400, 900);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -101,13 +104,13 @@ class ReviewUI {
 
     private void loadCurrent() {
         SessionRow r = rows.get(ptr);
-        qImgLabel.setIcon(new ImageIcon(Paths.get(config.dataDir, String.format("ch%02d-q%02d.png", r.chapter, r.question)).toString()));
-        Path aF = Paths.get(config.dataDir, String.format("ch%02d-q%02d-answer.png", r.chapter, r.question));
-        Path aS = Paths.get(config.dataDir, String.format("ch%02d-q%02d-ans.png", r.chapter, r.question));
+        qImgLabel.setIcon(new ImageIcon(Paths.get(config.getDataDir(), String.format("ch%02d-q%02d.png", r.getChapter(), r.getQuestion())).toString()));
+        Path aF = Paths.get(config.getDataDir(), String.format("ch%02d-q%02d-answer.png", r.getChapter(), r.getQuestion()));
+        Path aS = Paths.get(config.getDataDir(), String.format("ch%02d-q%02d-ans.png", r.getChapter(), r.getQuestion()));
         aImgLabel.setIcon(new ImageIcon(Files.exists(aF) ? aF.toString() : aS.toString()));
-        infoLabel.setText(String.format("[%s] Ch%02d Q%02d | Answer: [%s] | Time: %d:%02d", r.correct ? "OK" : "FAIL", r.chapter, r.question, r.userAnswer, r.time / 60, r.time % 60));
-        infoLabel.setForeground(r.correct ? Color.GREEN : Color.RED);
-        reviewedBox.setSelected(r.reviewed);
+        infoLabel.setText(String.format("[%s] Ch%02d Q%02d | Answer: [%s] | Time: %d:%02d", r.isCorrect() ? "OK" : "FAIL", r.getChapter(), r.getQuestion(), r.getUserAnswer(), r.getTime() / 60, r.getTime() % 60));
+        infoLabel.setForeground(r.isCorrect() ? Color.GREEN : Color.RED);
+        reviewedBox.setSelected(r.isReviewed());
         prevBtn.setEnabled(ptr > 0);
         nextBtn.setEnabled(ptr < rows.size() - 1);
     }

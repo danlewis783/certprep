@@ -1,6 +1,6 @@
 package acme.certprep;
 
-class SessionRow {
+public class SessionRow {
     int chapter, question, time, lineIndex;
     String userAnswer;
     boolean correct, reviewed;
@@ -14,5 +14,29 @@ class SessionRow {
         correct = Boolean.parseBoolean(c[5]);
         reviewed = c.length > 6 && Boolean.parseBoolean(c[6]);
         lineIndex = idx;
+    }
+
+    public int getChapter() {
+        return chapter;
+    }
+
+    public int getQuestion() {
+        return question;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public String getUserAnswer() {
+        return userAnswer;
+    }
+
+    public boolean isCorrect() {
+        return correct;
+    }
+
+    public boolean isReviewed() {
+        return reviewed;
     }
 }

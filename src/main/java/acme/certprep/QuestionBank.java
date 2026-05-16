@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-class QuestionBank {
+public class QuestionBank {
     List<QuestionInfo> questions = new ArrayList<>();
 
     QuestionBank(ArgParser config) throws IOException {
@@ -19,5 +19,13 @@ class QuestionBank {
             if ((config.chapter == null || ch == config.chapter) && (config.start == null || q >= config.start) && (config.end == null || q <= config.end))
                 questions.add(new QuestionInfo(ch, q, c[2], c[3]));
         }
+    }
+
+    public int size() {
+        return questions.size();
+    }
+
+    public QuestionInfo get(int index) {
+        return questions.get(index);
     }
 }

@@ -1,7 +1,6 @@
 package acme.certprep;
 
-import javax.swing.*;
-import java.awt.*;
+import acme.certprep.ui.CertPrepUi;
 import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,8 +44,6 @@ public class CertPrep {
             runInteractiveMode(configRaw);
         }
 
-        applyDarkTheme();
-
         try {
             final ArgParser config = configRaw;
             if (config.reviewFile != null) {
@@ -56,11 +53,11 @@ public class CertPrep {
                     System.exit(0);
                 }
                 validateReviewAssets(config, allRows);
-                SwingUtilities.invokeLater(() -> new ReviewUI(config, allRows));
+                CertPrepUi.showReview(config, allRows);
             } else if (config.testMode) {
                 final QuestionBank bank = new QuestionBank(config);
                 final SessionManager session = new SessionManager(config);
-                SwingUtilities.invokeLater(() -> new TestUI(config, bank, session));
+                CertPrepUi.showTest(config, bank, session);
             } else if (!config.interactive) {
                 System.err.println("No operational mode specified. Use --test, --review, or --grade.");
                 printHelp();
@@ -272,21 +269,6 @@ public class CertPrep {
             missing.forEach(m -> System.err.println(" - " + m));
             System.exit(1);
         }
-    }
-
-    private static void applyDarkTheme() {
-        UIManager.put("Panel.background", Color.BLACK);
-        UIManager.put("Panel.foreground", Color.WHITE);
-        UIManager.put("Label.background", Color.BLACK);
-        UIManager.put("Label.foreground", Color.WHITE);
-        UIManager.put("CheckBox.background", Color.BLACK);
-        UIManager.put("CheckBox.foreground", Color.WHITE);
-        UIManager.put("Button.background", Color.DARK_GRAY);
-        UIManager.put("Button.foreground", Color.WHITE);
-        UIManager.put("ToggleButton.background", Color.DARK_GRAY);
-        UIManager.put("ToggleButton.foreground", Color.WHITE);
-        UIManager.put("ScrollPane.background", Color.BLACK);
-        UIManager.put("Viewport.background", Color.BLACK);
     }
 
     static void printHelp() {
