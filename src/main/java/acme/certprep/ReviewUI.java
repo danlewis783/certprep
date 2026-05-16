@@ -23,7 +23,7 @@ class ReviewUI {
     ReviewUI(ArgParser config, List<SessionRow> rows) {
         this.config = config;
         this.rows = rows;
-        frame = new JFrame("JavaPractice Review Mode - " + config.reviewSession);
+        frame = new JFrame("JavaPractice Review Mode - " + config.reviewFile);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1400, 900);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

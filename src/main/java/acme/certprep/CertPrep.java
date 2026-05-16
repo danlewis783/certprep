@@ -2,13 +2,17 @@ package acme.certprep;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class CertPrep {
 
@@ -28,21 +32,24 @@ public class CertPrep {
             }
         } catch (Exception e) {
             System.err.println("Argument Error: " + e.getMessage());
-            System.err.println("Run 'java JavaPractice.java help' for usage details.");
+            System.err.println("Run 'java acme.certprep.CertPrep help' for usage details.");
             System.exit(1);
         }
 
-        // REQUIREMENT: If grade option is present, skip UI and print report
         if (configRaw.gradeFile != null) {
             runGradingReport(configRaw);
             System.exit(0);
+        }
+
+        if (configRaw.interactive) {
+            runInteractiveMode(configRaw);
         }
 
         applyDarkTheme();
 
         try {
             final ArgParser config = configRaw;
-            if (config.reviewSession != null) {
+            if (config.reviewFile != null) {
                 final List<SessionRow> allRows = SessionManager.loadAllForReview(config);
                 if (allRows.isEmpty()) {
                     System.out.println("The session file appears to be empty.");
@@ -50,15 +57,159 @@ public class CertPrep {
                 }
                 validateReviewAssets(config, allRows);
                 SwingUtilities.invokeLater(() -> new ReviewUI(config, allRows));
-            } else {
+            } else if (config.testMode) {
                 final QuestionBank bank = new QuestionBank(config);
                 final SessionManager session = new SessionManager(config);
                 SwingUtilities.invokeLater(() -> new TestUI(config, bank, session));
+            } else if (!config.interactive) {
+                System.err.println("No operational mode specified. Use --test, --review, or --grade.");
+                printHelp();
+                System.exit(1);
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
-//            System.err.println("Initialization Error: " + e.getMessage());
             System.exit(1);
+        }
+    }
+
+    private static void runInteractiveMode(ArgParser config) {
+        Console console = System.console();
+        Scanner scanner = (console == null) ? new Scanner(System.in) : null;
+
+        System.out.println(CYAN + "Welcome to CertPrep Interactive CLI" + RESET);
+        System.out.println("Available modes:");
+        System.out.println("  1. Test");
+        System.out.println("  2. Review");
+        System.out.println("  3. Grade");
+        String choice = readLine(console, scanner, "Select mode (1/2/3): ").trim();
+
+        if ("1".equals(choice)) {
+            config.testMode = true;
+            Path dataDir = Paths.get(config.dataDir);
+            if (!Files.exists(dataDir)) {
+                System.err.println("Error: Data directory does not exist: " + dataDir);
+                System.exit(1);
+            }
+
+            java.util.Map<Integer, int[]> chapterRanges = new java.util.HashMap<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dataDir, "ch*-q*.png")) {
+                for (Path entry : stream) {
+                    String name = entry.getFileName().toString();
+                    try {
+                        int dashIndex = name.indexOf('-');
+                        int qIndex = name.indexOf("-q");
+                        int dotIndex = name.lastIndexOf('.');
+                        if (dashIndex > 2 && qIndex != -1 && dotIndex != -1) {
+                            int ch = Integer.parseInt(name.substring(2, dashIndex));
+                            int q = Integer.parseInt(name.substring(qIndex + 2, dotIndex));
+                            int[] range = chapterRanges.computeIfAbsent(ch, k -> new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE});
+                            range[0] = Math.min(range[0], q);
+                            range[1] = Math.max(range[1], q);
+                        }
+                    } catch (NumberFormatException ignored) {}
+                }
+            } catch (IOException e) {
+                System.err.println("Error listing chapters: " + e.getMessage());
+                System.exit(1);
+            }
+
+            List<Integer> chapters = new ArrayList<>(chapterRanges.keySet());
+            if (chapters.isEmpty()) {
+                System.err.println("No chapter files found in " + dataDir);
+                System.exit(1);
+            }
+
+            Collections.sort(chapters);
+            System.out.println("\nChapters found:");
+            for (int i = 0; i < chapters.size(); i++) {
+                int ch = chapters.get(i);
+                int[] range = chapterRanges.get(ch);
+                System.out.printf("  %d. Chapter %d (Q%d-%d)\n", i + 1, ch, range[0], range[1]);
+            }
+
+            String chapterChoice = readLine(console, scanner, "Select chapter #: ").trim();
+            try {
+                int index = Integer.parseInt(chapterChoice) - 1;
+                if (index < 0 || index >= chapters.size()) {
+                    System.err.println("Error: Invalid choice.");
+                    System.exit(1);
+                }
+                config.chapter = chapters.get(index);
+                config.start = Integer.parseInt(readLine(console, scanner, "Enter Start Question #: ").trim());
+                config.end = Integer.parseInt(readLine(console, scanner, "Enter End Question #: ").trim());
+            } catch (NumberFormatException e) {
+                System.err.println("Error: Input must be a valid number.");
+                System.exit(1);
+            }
+        } else if ("2".equals(choice) || "3".equals(choice)) {
+            boolean isReview = "2".equals(choice);
+            Path sessionDir = Paths.get(config.sessionDir);
+            if (!Files.exists(sessionDir)) {
+                System.err.println("Error: Session directory does not exist: " + sessionDir);
+                System.exit(1);
+            }
+
+            List<String> sessions = new ArrayList<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(sessionDir, "*.csv")) {
+                for (Path entry : stream) {
+                    sessions.add(entry.getFileName().toString());
+                }
+            } catch (IOException e) {
+                System.err.println("Error listing sessions: " + e.getMessage());
+                System.exit(1);
+            }
+
+            if (sessions.isEmpty()) {
+                System.err.println("No session files found in " + sessionDir);
+                System.exit(1);
+            }
+
+            Collections.sort(sessions, Collections.reverseOrder());
+            System.out.println("\nSessions found:");
+            for (int i = 0; i < sessions.size(); i++) {
+                String name = sessions.get(i);
+                boolean reviewed = SessionManager.isFullyReviewed(config.sessionDir, name);
+                String summary = SessionManager.getSessionSummary(config.sessionDir, name);
+                System.out.printf("  %d. %s %s %s\n", i + 1, name, summary, reviewed ? (GREEN + "[REVIEWED]" + RESET) : "");
+            }
+
+            String sessionChoice = readLine(console, scanner, "Select session #: ").trim();
+            try {
+                int index = Integer.parseInt(sessionChoice) - 1;
+                if (index < 0 || index >= sessions.size()) {
+                    System.err.println("Error: Invalid choice.");
+                    System.exit(1);
+                }
+                if (isReview) {
+                    config.reviewFile = sessions.get(index);
+                } else {
+                    config.gradeFile = sessions.get(index);
+                    runGradingReport(config);
+                    System.exit(0);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Error: Input must be a valid number.");
+                System.exit(1);
+            }
+        } else {
+            System.err.println("Error: Invalid choice.");
+            System.exit(1);
+        }
+
+        try {
+            config.validate();
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: " + e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    private static String readLine(Console console, Scanner scanner, String prompt) {
+        if (console != null) {
+            return console.readLine(prompt);
+        } else {
+            System.out.print(prompt);
+            return scanner.nextLine();
         }
     }
 
@@ -139,13 +290,16 @@ public class CertPrep {
     }
 
     static void printHelp() {
-        System.out.println("Usage: java JavaPractice.java [options]");
+        System.out.println("Usage: java acme.certprep.CertPrep [options]");
         System.out.println("Options:");
+        System.out.println("  --test                Start a new practice test (requires --chapter, --start, --end)");
         System.out.println("  --chapter <#>         Chapter to test");
-        System.out.println("  --review-session <f>  Navigate/toggle review for a session CSV");
+        System.out.println("  --start <#>           First question number");
+        System.out.println("  --end <#>             Last question number");
+        System.out.println("  --review <f>          Navigate/toggle review for a session CSV");
         System.out.println("  --grade <f>           Output score report for a session CSV");
-        System.out.println("  --data <path>         Path to images (default: 'data')");
-        System.out.println("  --session <path>      Path to sessions (default: 'sessions')");
+        System.out.println("  --data-dir <path>     Path to images (default: '~/.certprep/data')");
+        System.out.println("  --session-dir <path>  Path to sessions (default: '~/.certprep/sessions')");
     }
 
     public static String[] parseCSVLine(String line) {

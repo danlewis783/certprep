@@ -15,11 +15,25 @@
     * **CSV Columns:** `Chapter, Question, Answer, Completed, Elapsed Time, Correct Yes/No, Reviewed`.
 
 ## 3. Command-Line Interface
+* **Interactive Mode:** If no arguments are provided, the application launches an interactive CLI using `java.io.Console`. 
+    * Prompts for mode selection (Test, Review, Grade).
+    * If **Test Mode** is selected, lists available chapters from the data directory and allows selection by number (displaying available question ranges for each), then prompts for Start Question #, and End Question #.
+    * If **Review** or **Grade Mode** is selected, lists available `.csv` session files from the session directory and allows selection by number.
+* `--test`: Initiates **Timed Test Mode**. Requires `--chapter`, `--start`, and `--end`.
 * `--chapter <#>`: Filters test to a specific chapter.
 * `--start <#>` / `--end <#>`: Defines a specific question range.
-* `--review-session <filename>`: Triggers **Untimed Review Mode** for the specified CSV.
-* `--data <path>` / `--session <path>`: Overrides default directory locations.
+* `--review <filename>`: Triggers **Untimed Review Mode** for the specified CSV.
+* `--grade <filename>`: Outputs a score report for the specified session CSV to the console.
+* `--data-dir <path>` / `--session-dir <path>`: Overrides default directory locations.
 * `help` / `--help` / `-h`: Displays a formatted usage menu and exits.
+
+## 4. Operational Modes
+The application operates in three mutually exclusive modes:
+1. **Test Mode (`--test`)**: Take a timed practice test.
+2. **Review Mode (`--review`)**: Review a previous session's answers.
+3. **Grade Mode (`--grade`)**: Generate a performance report for a session.
+
+One of these modes must be specified for the application to run.
 
 ## 4. General UI (Dark Mode & Whiteboard)
 * **Visual Theme:** Strict Dark Mode (Black backgrounds, White text, Dark Gray buttons). No focus rings/dotted outlines on components.

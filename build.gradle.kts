@@ -31,37 +31,9 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("certprep.CertPrep")
+    mainClass.set("acme.certprep.CertPrep")
 }
 
 tasks.named<JavaExec>("run") {
-//    val chapter: Int = 10
-//    val start: Int = 21
-//    val end: Int = 40
-//    val home = System.getProperty("user.home")
-//    val certprepDir = "$home/.certprep"
-//
-//    args(
-//        "--chapter", chapter,
-//        "--start", start,
-//        "--end", end,
-//        "--data", "$certprepDir/data",
-//        "--session", "$certprepDir/sessions"
-//    )
-
-    val home = System.getProperty("user.home")
-    val certprepDir = "$home/.certprep"
-
-    args(
-        "--review-session", "$certprepDir/sessions/session-20260329-001.csv",
-        "--data", "$certprepDir/data",
-    )
-
-//    val home = System.getProperty("user.home")
-//    val certprepDir = "$home/.certprep"
-//
-//    args(
-//        "--grade", "$certprepDir/sessions/session-20260329-001.csv",
-//        "--data", "$certprepDir/data",
-//    )
+    standardInput = System.`in`
 }

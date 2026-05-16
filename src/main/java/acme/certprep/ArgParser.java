@@ -2,12 +2,16 @@ package acme.certprep;
 
 class ArgParser {
     Integer chapter = null, start = null, end = null;
-    String dataDir = "data", sessionDir = "sessions", reviewSession = null, gradeFile = null;
+    String dataDir = System.getProperty("user.home") + "/.certprep/data";
+    String sessionDir = System.getProperty("user.home") + "/.certprep/sessions";
+    String reviewFile = null, gradeFile = null;
+    boolean testMode = false;
     boolean showHelp = false;
+    boolean interactive = false;
 
     ArgParser(String[] args) {
         if (args.length == 0) {
-            showHelp = true;
+            interactive = true;
             return;
         }
         for (int i = 0; i < args.length; i++) {
@@ -17,6 +21,9 @@ class ArgParser {
                 case "-h":
                     showHelp = true;
                     return;
+                case "--test":
+                    testMode = true;
+                    break;
                 case "--chapter":
                     chapter = Integer.parseInt(args[++i]);
                     break;
@@ -26,19 +33,41 @@ class ArgParser {
                 case "--end":
                     end = Integer.parseInt(args[++i]);
                     break;
-                case "--data":
+                case "--data-dir":
                     dataDir = args[++i];
                     break;
-                case "--session":
+                case "--session-dir":
                     sessionDir = args[++i];
                     break;
-                case "--review-session":
-                    reviewSession = args[++i];
+                case "--review":
+                    reviewFile = args[++i];
                     break;
                 case "--grade":
                 case "-grade":
                     gradeFile = args[++i];
                     break;
+            }
+        }
+        validate();
+    }
+
+    void validate() {
+        int modes = 0;
+        if (testMode) modes++;
+        if (reviewFile != null) modes++;
+        if (gradeFile != null) modes++;
+
+        if (!interactive && modes == 0 && !showHelp) {
+            throw new IllegalArgumentException("No operational mode specified. Use --test, --review, or --grade.");
+        }
+
+        if (modes > 1) {
+            throw new IllegalArgumentException("Parameters --test, --review, and --grade are mutually exclusive.");
+        }
+
+        if (testMode) {
+            if (chapter == null || start == null || end == null) {
+                throw new IllegalArgumentException("--test mode requires --chapter, --start, and --end parameters.");
             }
         }
     }
