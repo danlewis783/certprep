@@ -1,5 +1,7 @@
 package acme.certprep.util;
 
+import acme.certprep.CertPrepFiles;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +52,7 @@ public class GenerateSampleData {
                 cleanDataDirectory(dataDir);
             }
 
-            // Generate the master-answer-key.csv
+            // Generate the master answer key.
             String csvContent = "Chapter,Question,Answer,Possible\n" +
                     "9,38,\"F\",\"A,B,C,D,E,F\"\n" +
                     "9,39,\"A,B,E\",\"A,B,C,D,E,F\"\n" +
@@ -58,8 +60,8 @@ public class GenerateSampleData {
                     "10,1,\"B\",\"A,B,C,D,E\"\n" +
                     "10,2,\"C,E\",\"A,B,C,D,E,F\"";
 
-            Files.writeString(dataDir.resolve("master-answer-key.csv"), csvContent);
-            System.out.println(GREEN + "Success: Created master-answer-key.csv" + RESET);
+            Files.writeString(dataDir.resolve(CertPrepFiles.MASTER_ANSWER_KEY_FILENAME), csvContent);
+            System.out.println(GREEN + "Success: Created " + CertPrepFiles.MASTER_ANSWER_KEY_FILENAME + RESET);
 
             List<SampleQuestion> data = List.of(
                     new SampleQuestion(9, 38, "F"),
@@ -70,11 +72,8 @@ public class GenerateSampleData {
             );
 
             for (SampleQuestion item : data) {
-                String cPad = String.format("%02d", item.chapter);
-                String qPad = String.format("%02d", item.question);
-
                 // Question Image
-                String qFile = String.format("ch%s-q%s.png", cPad, qPad);
+                String qFile = CertPrepFiles.questionImageName(item.chapter, item.question);
                 generateImage(dataDir.resolve(qFile),
                         Color.LIGHT_GRAY,
                         Color.BLUE.darker(),
@@ -82,7 +81,7 @@ public class GenerateSampleData {
                 System.out.println(GRAY + "Created Question: " + qFile + RESET);
 
                 // Answer Image
-                String aFile = String.format("ch%s-q%s-ans.png", cPad, qPad);
+                String aFile = CertPrepFiles.alternateAnswerImageName(item.chapter, item.question);
                 generateAnswerImage(dataDir.resolve(aFile), item);
                 System.out.println(GREEN + "Created Answer:   " + aFile + RESET);
             }

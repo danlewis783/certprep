@@ -3,6 +3,7 @@ package acme.certprep.ui;
 import acme.certprep.QuestionInfo;
 import acme.certprep.Session;
 import acme.certprep.ExamConfig;
+import acme.certprep.CertPrepFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +112,7 @@ class ExamUI {
 
     private void load() {
         QuestionInfo q = questions.get(idx);
-        imageLabel.setIcon(new ImageIcon(config.getDataDir().resolve(String.format("ch%02d-q%02d.png", q.getChapter(), q.getQuestion())).toString()));
+        imageLabel.setIcon(new ImageIcon(config.getDataDir().resolve(CertPrepFiles.questionImageName(q.getChapter(), q.getQuestion())).toString()));
         checkboxPanel.removeAll();
         boxes.clear();
         for (String o : q.getPossibleAnswers()) {

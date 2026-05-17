@@ -96,7 +96,7 @@ public class CertPrep {
             }
 
             java.util.Map<Integer, int[]> chapterRanges = new java.util.HashMap<>();
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dataDir, "ch*-q*.png")) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dataDir, CertPrepFiles.QUESTION_IMAGE_GLOB)) {
                 for (Path entry : stream) {
                     String name = entry.getFileName().toString();
                     try {
@@ -257,9 +257,9 @@ public class CertPrep {
     private static void validateReviewAssets(ReviewConfig config, List<SessionRow> rows) {
         List<String> missing = new ArrayList<>();
         for (SessionRow r : rows) {
-            String q = String.format("ch%02d-q%02d.png", r.getChapter(), r.getQuestion());
-            String a1 = String.format("ch%02d-q%02d-answer.png", r.getChapter(), r.getQuestion());
-            String a2 = String.format("ch%02d-q%02d-ans.png", r.getChapter(), r.getQuestion());
+            String q = CertPrepFiles.questionImageName(r.getChapter(), r.getQuestion());
+            String a1 = CertPrepFiles.answerImageName(r.getChapter(), r.getQuestion());
+            String a2 = CertPrepFiles.alternateAnswerImageName(r.getChapter(), r.getQuestion());
             if (!Files.exists(config.getDataDir().resolve(q))) {
                 missing.add(q);
             }

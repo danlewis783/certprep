@@ -31,10 +31,10 @@ public final class SessionRepository {
         int sequence = 1;
         Path file;
         do {
-            file = sessionDir.resolve(String.format("session-%s-%03d.csv", date, sequence++));
+            file = sessionDir.resolve(CertPrepFiles.sessionFileName(date, sequence++));
         } while (Files.exists(file));
 
-        Files.writeString(file, "Chapter,Question,Answer,Completed,Elapsed Time,Correct Yes/No,Reviewed\n");
+        Files.writeString(file, CertPrepFiles.SESSION_HEADER + "\n");
         return new Session(file);
     }
 
@@ -44,7 +44,7 @@ public final class SessionRepository {
 
     public List<Session> listSessions() throws IOException {
         List<Session> sessions = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(sessionDir, "*.csv")) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(sessionDir, CertPrepFiles.SESSION_FILE_GLOB)) {
             for (Path entry : stream) {
                 sessions.add(new Session(entry));
             }

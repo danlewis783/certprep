@@ -19,7 +19,7 @@ class QuestionBankTest {
     void loadsMatchingQuestionsAsImmutableList() throws IOException {
         Path dataDir = tempDir.resolve("data");
         Files.createDirectories(dataDir);
-        Files.writeString(dataDir.resolve("master-answer-key.csv"),
+        Files.writeString(dataDir.resolve(CertPrepFiles.MASTER_ANSWER_KEY_FILENAME),
                 "Chapter,Question,Answer,Possible\n" +
                         "9,37,\"A\",\"A,B\"\n" +
                         "9,38,\"A,B\",\"A,B,C\"\n" +

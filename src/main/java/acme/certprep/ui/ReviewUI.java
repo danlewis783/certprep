@@ -3,6 +3,7 @@ package acme.certprep.ui;
 import acme.certprep.ReviewConfig;
 import acme.certprep.Session;
 import acme.certprep.SessionRow;
+import acme.certprep.CertPrepFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,9 +118,9 @@ class ReviewUI {
 
     private void loadCurrent() {
         SessionRow r = rows.get(ptr);
-        qImgLabel.setIcon(new ImageIcon(config.getDataDir().resolve(String.format("ch%02d-q%02d.png", r.getChapter(), r.getQuestion())).toString()));
-        Path aF = config.getDataDir().resolve(String.format("ch%02d-q%02d-answer.png", r.getChapter(), r.getQuestion()));
-        Path aS = config.getDataDir().resolve(String.format("ch%02d-q%02d-ans.png", r.getChapter(), r.getQuestion()));
+        qImgLabel.setIcon(new ImageIcon(config.getDataDir().resolve(CertPrepFiles.questionImageName(r.getChapter(), r.getQuestion())).toString()));
+        Path aF = config.getDataDir().resolve(CertPrepFiles.answerImageName(r.getChapter(), r.getQuestion()));
+        Path aS = config.getDataDir().resolve(CertPrepFiles.alternateAnswerImageName(r.getChapter(), r.getQuestion()));
         aImgLabel.setIcon(new ImageIcon(Files.exists(aF) ? aF.toString() : aS.toString()));
         infoLabel.setText(String.format("[%s] Ch%02d Q%02d | Answer: [%s] | Time: %d:%02d", r.isCorrect() ? "OK" : "FAIL", r.getChapter(), r.getQuestion(), r.getUserAnswer(), r.getTime() / 60, r.getTime() % 60));
         infoLabel.setForeground(r.isCorrect() ? Color.GREEN : Color.RED);

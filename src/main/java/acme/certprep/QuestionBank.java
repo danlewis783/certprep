@@ -17,7 +17,7 @@ public final class QuestionBank {
     }
 
     static List<QuestionInfo> load(ExamConfig config) throws IOException {
-        Path k = config.getDataDir().resolve("master-answer-key.csv");
+        Path k = config.getDataDir().resolve(CertPrepFiles.MASTER_ANSWER_KEY_FILENAME);
         List<String> lines = Files.readAllLines(k);
         List<QuestionInfo> questions = new ArrayList<>();
         for (int i = 1; i < lines.size(); i++) {
