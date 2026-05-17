@@ -18,38 +18,27 @@ public class SessionManager {
 
     Path sessionFile;
 
-    SessionManager(ArgParser config) throws IOException {
-        Files.createDirectories(Paths.get(config.sessionDir));
+    SessionManager(TestConfig config) throws IOException {
+        Files.createDirectories(config.getSessionDir());
         String ds = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         int s = 1;
         Path c;
         do {
-            c = Paths.get(config.sessionDir, String.format("session-%s-%03d.csv", ds, s++));
+            c = config.getSessionDir().resolve(String.format("session-%s-%03d.csv", ds, s++));
         } while (Files.exists(c));
         sessionFile = c;
         Files.writeString(sessionFile, "Chapter,Question,Answer,Completed,Elapsed Time,Correct Yes/No,Reviewed\n");
     }
 
-    static Path resolvePath(String sessionDir, String filename) {
-        Path p = Paths.get(filename);
-        if (p.getNameCount() != 1) {
-            throw new IllegalArgumentException(
-                "Please provide only a filename, not a path: " + filename
-            );
-        }
-        return Paths.get(sessionDir, filename);
-    }
-
-    static List<SessionRow> loadAllForReview(ArgParser cfg) throws IOException {
-        Path p = resolvePath(cfg.sessionDir, cfg.reviewFile);
-        List<String> l = Files.readAllLines(p);
+    static List<SessionRow> loadAllForReview(ReviewConfig config) throws IOException {
+        List<String> l = Files.readAllLines(config.getSessionFile());
         List<SessionRow> r = new ArrayList<>();
         for (int i = 1; i < l.size(); i++) if (!l.get(i).trim().isEmpty()) r.add(new SessionRow(l.get(i), i));
         return r;
     }
 
-    public static void upd(ArgParser cfg, SessionRow r, boolean s) throws IOException {
-        Path p = resolvePath(cfg.sessionDir, cfg.reviewFile);
+    public static void upd(ReviewConfig config, SessionRow r, boolean s) throws IOException {
+        Path p = config.getSessionFile();
         List<String> l = Files.readAllLines(p);
         String[] c = CertPrep.parseCSVLine(l.get(r.lineIndex));
         l.set(r.lineIndex, String.format("%s,%s,\"%s\",%s,%s,%s,%b", c[0], c[1], c[2], c[3], c[4], c[5], s));
@@ -57,9 +46,9 @@ public class SessionManager {
         r.reviewed = s;
     }
 
-    static boolean isFullyReviewed(String sessionDir, String filename) {
+    static boolean isFullyReviewed(Path sessionDir, String filename) {
         try {
-            Path p = Paths.get(sessionDir, filename);
+            Path p = sessionDir.resolve(filename);
             List<String> lines = Files.readAllLines(p);
             if (lines.size() <= 1) return false;
             for (int i = 1; i < lines.size(); i++) {
@@ -75,10 +64,10 @@ public class SessionManager {
             return false;
         }
     }
-    
-    static String getSessionSummary(String sessionDir, String filename) {
+
+    static String getSessionSummary(Path sessionDir, String filename) {
         try {
-            Path p = Paths.get(sessionDir, filename);
+            Path p = sessionDir.resolve(filename);
             List<String> lines = Files.readAllLines(p);
             if (lines.size() <= 1) return "";
             int ch = -1;

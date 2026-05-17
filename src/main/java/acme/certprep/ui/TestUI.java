@@ -1,15 +1,14 @@
 package acme.certprep.ui;
 
-import acme.certprep.ArgParser;
 import acme.certprep.QuestionBank;
 import acme.certprep.QuestionInfo;
 import acme.certprep.SessionManager;
+import acme.certprep.TestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,7 @@ class TestUI {
     final JToggleButton fitBtn;
     final WhiteboardPanel wb;
     final List<JCheckBox> boxes = new ArrayList<>();
-    final ArgParser config;
+    final TestConfig config;
     final QuestionBank bank;
     final SessionManager session;
     int idx = 0;
@@ -39,7 +38,7 @@ class TestUI {
     final int totalT;
     final Timer timer;
 
-    TestUI(ArgParser config, QuestionBank bank, SessionManager session) {
+    TestUI(TestConfig config, QuestionBank bank, SessionManager session) {
         this.config = config;
         this.bank = bank;
         this.session = session;
@@ -113,7 +112,7 @@ class TestUI {
 
     private void load() {
         QuestionInfo q = bank.get(idx);
-        imageLabel.setIcon(new ImageIcon(Paths.get(config.getDataDir(), String.format("ch%02d-q%02d.png", q.getChapter(), q.getQuestion())).toString()));
+        imageLabel.setIcon(new ImageIcon(config.getDataDir().resolve(String.format("ch%02d-q%02d.png", q.getChapter(), q.getQuestion())).toString()));
         checkboxPanel.removeAll();
         boxes.clear();
         for (String o : q.getPossibleAnswers()) {

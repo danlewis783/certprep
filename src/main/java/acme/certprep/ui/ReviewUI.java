@@ -1,6 +1,6 @@
 package acme.certprep.ui;
 
-import acme.certprep.ArgParser;
+import acme.certprep.ReviewConfig;
 import acme.certprep.SessionManager;
 import acme.certprep.SessionRow;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 class ReviewUI {
@@ -30,14 +29,14 @@ class ReviewUI {
     final JScrollPane qScroll;
     final JScrollPane aScroll;
     final List<SessionRow> rows;
-    final ArgParser config;
+    final ReviewConfig config;
 
     int ptr = 0;
 
-    ReviewUI(ArgParser config, List<SessionRow> rows) {
+    ReviewUI(ReviewConfig config, List<SessionRow> rows) {
         this.config = config;
         this.rows = rows;
-        frame = new JFrame("JavaPractice Review Mode - " + config.getReviewFile());
+        frame = new JFrame("JavaPractice Review Mode - " + config.getSessionFile().getFileName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1400, 900);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -116,9 +115,9 @@ class ReviewUI {
 
     private void loadCurrent() {
         SessionRow r = rows.get(ptr);
-        qImgLabel.setIcon(new ImageIcon(Paths.get(config.getDataDir(), String.format("ch%02d-q%02d.png", r.getChapter(), r.getQuestion())).toString()));
-        Path aF = Paths.get(config.getDataDir(), String.format("ch%02d-q%02d-answer.png", r.getChapter(), r.getQuestion()));
-        Path aS = Paths.get(config.getDataDir(), String.format("ch%02d-q%02d-ans.png", r.getChapter(), r.getQuestion()));
+        qImgLabel.setIcon(new ImageIcon(config.getDataDir().resolve(String.format("ch%02d-q%02d.png", r.getChapter(), r.getQuestion())).toString()));
+        Path aF = config.getDataDir().resolve(String.format("ch%02d-q%02d-answer.png", r.getChapter(), r.getQuestion()));
+        Path aS = config.getDataDir().resolve(String.format("ch%02d-q%02d-ans.png", r.getChapter(), r.getQuestion()));
         aImgLabel.setIcon(new ImageIcon(Files.exists(aF) ? aF.toString() : aS.toString()));
         infoLabel.setText(String.format("[%s] Ch%02d Q%02d | Answer: [%s] | Time: %d:%02d", r.isCorrect() ? "OK" : "FAIL", r.getChapter(), r.getQuestion(), r.getUserAnswer(), r.getTime() / 60, r.getTime() % 60));
         infoLabel.setForeground(r.isCorrect() ? Color.GREEN : Color.RED);

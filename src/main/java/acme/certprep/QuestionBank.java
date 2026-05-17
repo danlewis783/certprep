@@ -15,14 +15,14 @@ public class QuestionBank {
 
     final List<QuestionInfo> questions = new ArrayList<>();
 
-    QuestionBank(ArgParser config) throws IOException {
-        Path k = Paths.get(config.dataDir, "master-answer-key.csv");
+    QuestionBank(TestConfig config) throws IOException {
+        Path k = config.getDataDir().resolve("master-answer-key.csv");
         List<String> lines = Files.readAllLines(k);
         for (int i = 1; i < lines.size(); i++) {
             String[] c = CertPrep.parseCSVLine(lines.get(i));
             int ch = Integer.parseInt(c[0]);
             int q = Integer.parseInt(c[1]);
-            if ((config.chapter == null || ch == config.chapter) && (config.start == null || q >= config.start) && (config.end == null || q <= config.end))
+            if (ch == config.getChapter() && q >= config.getStart() && q <= config.getEnd())
                 questions.add(new QuestionInfo(ch, q, c[2], c[3]));
         }
     }

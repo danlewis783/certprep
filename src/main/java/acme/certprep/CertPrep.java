@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,46 +24,49 @@ public class CertPrep {
     private static final String CYAN  = "\033[0;36m";
 
     public static void main(String[] args) {
-        ArgParser configRaw = null;
-        try {
-            configRaw = new ArgParser(args);
-            if (configRaw.showHelp) {
+        ParseResult parseResult = new ArgParser().parse(args);
+        switch (parseResult.getStatus()) {
+            case HELP:
                 printHelp();
                 System.exit(0);
-            }
-        } catch (Exception e) {
-            System.err.println("Argument Error: " + e.getMessage());
-            System.err.println("Run 'java acme.certprep.CertPrep help' for usage details.");
-            System.exit(1);
+                return;
+            case FAILURE:
+                System.err.println("Argument Error: " + parseResult.getMessage());
+                System.err.println("Run 'java acme.certprep.CertPrep help' for usage details.");
+                System.exit(1);
+                return;
+            case INTERACTIVE:
+                runConfig(runInteractiveMode());
+                return;
+            case SUCCESS:
+                runConfig(parseResult.getConfig());
+                return;
+            default:
+                System.err.println("Unknown parser result: " + parseResult.getStatus());
+                System.exit(1);
         }
+    }
 
-        if (configRaw.gradeFile != null) {
-            runGradingReport(configRaw);
-            System.exit(0);
-        }
-
-        if (configRaw.interactive) {
-            runInteractiveMode(configRaw);
-        }
-
+    private static void runConfig(Config config) {
         try {
-            final ArgParser config = configRaw;
-            if (config.reviewFile != null) {
-                final List<SessionRow> allRows = SessionManager.loadAllForReview(config);
+            if (config instanceof GradeConfig) {
+                runGradingReport((GradeConfig) config);
+            } else if (config instanceof ReviewConfig) {
+                ReviewConfig reviewConfig = (ReviewConfig) config;
+                final List<SessionRow> allRows = SessionManager.loadAllForReview(reviewConfig);
                 if (allRows.isEmpty()) {
                     System.out.println("The session file appears to be empty.");
                     System.exit(0);
                 }
-                validateReviewAssets(config, allRows);
-                CertPrepUi.showReview(config, allRows);
-            } else if (config.testMode) {
-                final QuestionBank bank = new QuestionBank(config);
-                final SessionManager session = new SessionManager(config);
-                CertPrepUi.showTest(config, bank, session);
-            } else if (!config.interactive) {
-                System.err.println("No operational mode specified. Use --test, --review, or --grade.");
-                printHelp();
-                System.exit(1);
+                validateReviewAssets(reviewConfig, allRows);
+                CertPrepUi.showReview(reviewConfig, allRows);
+            } else if (config instanceof TestConfig) {
+                TestConfig testConfig = (TestConfig) config;
+                final QuestionBank bank = new QuestionBank(testConfig);
+                final SessionManager session = new SessionManager(testConfig);
+                CertPrepUi.showTest(testConfig, bank, session);
+            } else {
+                throw new IllegalArgumentException("Unsupported config type: " + config.getClass().getName());
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -72,9 +74,11 @@ public class CertPrep {
         }
     }
 
-    private static void runInteractiveMode(ArgParser config) {
+    private static Config runInteractiveMode() {
         Console console = System.console();
         Scanner scanner = (console == null) ? new Scanner(System.in) : null;
+        Path dataDir = ArgParser.defaultDataDir();
+        Path sessionDir = ArgParser.defaultSessionDir();
 
         System.out.println(CYAN + "Welcome to CertPrep Interactive CLI" + RESET);
         System.out.println("Available modes:");
@@ -84,8 +88,6 @@ public class CertPrep {
         String choice = readLine(console, scanner, "Select mode (1/2/3): ").trim();
 
         if ("1".equals(choice)) {
-            config.testMode = true;
-            Path dataDir = Paths.get(config.dataDir);
             if (!Files.exists(dataDir)) {
                 System.err.println("Error: Data directory does not exist: " + dataDir);
                 System.exit(1);
@@ -136,16 +138,16 @@ public class CertPrep {
                     System.err.println("Error: Invalid choice.");
                     System.exit(1);
                 }
-                config.chapter = chapters.get(index);
-                config.start = Integer.parseInt(readLine(console, scanner, "Enter Start Question #: ").trim());
-                config.end = Integer.parseInt(readLine(console, scanner, "Enter End Question #: ").trim());
+                int chapter = chapters.get(index);
+                int start = Integer.parseInt(readLine(console, scanner, "Enter Start Question #: ").trim());
+                int end = Integer.parseInt(readLine(console, scanner, "Enter End Question #: ").trim());
+                return new TestConfig(chapter, start, end, dataDir, sessionDir);
             } catch (NumberFormatException e) {
                 System.err.println("Error: Input must be a valid number.");
                 System.exit(1);
             }
         } else if ("2".equals(choice) || "3".equals(choice)) {
             boolean isReview = "2".equals(choice);
-            Path sessionDir = Paths.get(config.sessionDir);
             if (!Files.exists(sessionDir)) {
                 System.err.println("Error: Session directory does not exist: " + sessionDir);
                 System.exit(1);
@@ -170,8 +172,8 @@ public class CertPrep {
             System.out.println("\nSessions found:");
             for (int i = 0; i < sessions.size(); i++) {
                 String name = sessions.get(i);
-                boolean reviewed = SessionManager.isFullyReviewed(config.sessionDir, name);
-                String summary = SessionManager.getSessionSummary(config.sessionDir, name);
+                boolean reviewed = SessionManager.isFullyReviewed(sessionDir, name);
+                String summary = SessionManager.getSessionSummary(sessionDir, name);
                 System.out.printf("  %d. %s %s %s\n", i + 1, name, summary, reviewed ? (GREEN + "[REVIEWED]" + RESET) : "");
             }
 
@@ -182,12 +184,11 @@ public class CertPrep {
                     System.err.println("Error: Invalid choice.");
                     System.exit(1);
                 }
+                Path sessionFile = sessionDir.resolve(sessions.get(index));
                 if (isReview) {
-                    config.reviewFile = sessions.get(index);
+                    return new ReviewConfig(dataDir, sessionDir, sessionFile);
                 } else {
-                    config.gradeFile = sessions.get(index);
-                    runGradingReport(config);
-                    System.exit(0);
+                    return new GradeConfig(dataDir, sessionDir, sessionFile);
                 }
             } catch (NumberFormatException e) {
                 System.err.println("Error: Input must be a valid number.");
@@ -198,12 +199,7 @@ public class CertPrep {
             System.exit(1);
         }
 
-        try {
-            config.validate();
-        } catch (IllegalArgumentException e) {
-            System.err.println("Error: " + e.getMessage());
-            System.exit(1);
-        }
+        throw new IllegalStateException("Interactive mode exited without a config");
     }
 
     private static String readLine(Console console, Scanner scanner, String prompt) {
@@ -215,9 +211,9 @@ public class CertPrep {
         }
     }
 
-    private static void runGradingReport(ArgParser config) {
+    private static void runGradingReport(GradeConfig config) {
         try {
-            Path path = SessionManager.resolvePath(config.sessionDir, config.gradeFile);
+            Path path = config.getSessionFile();
             if (!Files.exists(path)) {
                 System.err.println(RED + "Error: Session file not found: " + path + RESET);
                 return;
@@ -239,7 +235,7 @@ public class CertPrep {
             }
 
             if (total == 0) {
-                System.out.println(RED + "No questions found in session: " + config.gradeFile + RESET);
+                System.out.println(RED + "No questions found in session: " + config.getSessionFile().getFileName() + RESET);
                 return;
             }
 
@@ -247,7 +243,7 @@ public class CertPrep {
             String color = (percent >= 68.0) ? GREEN : RED;
 
             System.out.println("\n" + CYAN + "========================================" + RESET);
-            System.out.println(" SESSION GRADE REPORT: " + config.gradeFile);
+            System.out.println(" SESSION GRADE REPORT: " + config.getSessionFile().getFileName());
             System.out.println(CYAN + "========================================" + RESET);
             System.out.println(" Total Questions: " + total);
             System.out.println(" Number Correct:  " + correct);
@@ -260,14 +256,14 @@ public class CertPrep {
         }
     }
 
-    private static void validateReviewAssets(ArgParser config, List<SessionRow> rows) {
+    private static void validateReviewAssets(ReviewConfig config, List<SessionRow> rows) {
         List<String> missing = new ArrayList<>();
         for (SessionRow r : rows) {
-            String q = String.format("ch%02d-q%02d.png", r.chapter, r.question);
-            String a1 = String.format("ch%02d-q%02d-answer.png", r.chapter, r.question);
-            String a2 = String.format("ch%02d-q%02d-ans.png", r.chapter, r.question);
-            if (!Files.exists(Paths.get(config.dataDir, q))) missing.add(q);
-            if (!Files.exists(Paths.get(config.dataDir, a1)) && !Files.exists(Paths.get(config.dataDir, a2))) missing.add(a1 + "/" + a2);
+            String q = String.format("ch%02d-q%02d.png", r.getChapter(), r.getQuestion());
+            String a1 = String.format("ch%02d-q%02d-answer.png", r.getChapter(), r.getQuestion());
+            String a2 = String.format("ch%02d-q%02d-ans.png", r.getChapter(), r.getQuestion());
+            if (!Files.exists(config.getDataDir().resolve(q))) missing.add(q);
+            if (!Files.exists(config.getDataDir().resolve(a1)) && !Files.exists(config.getDataDir().resolve(a2))) missing.add(a1 + "/" + a2);
         }
         if (!missing.isEmpty()) {
             System.err.println(RED + "FATAL: Missing Assets" + RESET);

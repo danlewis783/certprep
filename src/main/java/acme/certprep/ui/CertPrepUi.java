@@ -1,9 +1,10 @@
 package acme.certprep.ui;
 
-import acme.certprep.ArgParser;
 import acme.certprep.QuestionBank;
+import acme.certprep.ReviewConfig;
 import acme.certprep.SessionManager;
 import acme.certprep.SessionRow;
+import acme.certprep.TestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +41,12 @@ public final class CertPrepUi {
         themeApplied = true;
     }
 
-    public static void showReview(ArgParser config, List<SessionRow> allRows) {
+    public static void showReview(ReviewConfig config, List<SessionRow> allRows) {
         applyDarkTheme();
         SwingUtilities.invokeLater(() -> new ReviewUI(config, allRows));
     }
 
-    public static void showTest(ArgParser config, QuestionBank bank, SessionManager session) {
+    public static void showTest(TestConfig config, QuestionBank bank, SessionManager session) {
         applyDarkTheme();
         SwingUtilities.invokeLater(() -> new TestUI(config, bank, session));
     }
