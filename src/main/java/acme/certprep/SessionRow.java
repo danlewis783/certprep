@@ -15,7 +15,7 @@ public class SessionRow {
     boolean reviewed;
 
     SessionRow(String line, int idx) {
-        String[] c = CertPrep.parseCSVLine(line);
+        String[] c = CsvLineParser.parseLine(line);
         chapter = Integer.parseInt(c[0]);
         question = Integer.parseInt(c[1]);
         userAnswer = c[2];

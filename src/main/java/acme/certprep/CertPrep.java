@@ -287,19 +287,4 @@ public class CertPrep {
         System.out.println("  --session-dir <path>  Path to sessions (default: '~/.certprep/sessions')");
     }
 
-    public static String[] parseCSVLine(String line) {
-        List<String> res = new ArrayList<>();
-        boolean q = false; StringBuilder sb = new StringBuilder();
-        for (char c : line.toCharArray()) {
-            if (c == '\"') {
-                q = !q;
-            } else if (c == ',' && !q) { res.add(sb.toString().trim()); sb.setLength(0); }
-            else {
-                sb.append(c);
-            }
-        }
-        res.add(sb.toString().trim());
-        return res.toArray(new String[0]);
-    }
-
 }

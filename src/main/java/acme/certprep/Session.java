@@ -44,7 +44,7 @@ public final class Session {
 
     public void updateReviewed(SessionRow row, boolean reviewed) throws IOException {
         List<String> lines = Files.readAllLines(file);
-        String[] cols = CertPrep.parseCSVLine(lines.get(row.lineIndex));
+        String[] cols = CsvLineParser.parseLine(lines.get(row.lineIndex));
         lines.set(row.lineIndex, String.format("%s,%s,\"%s\",%s,%s,%s,%b", cols[0], cols[1], cols[2], cols[3], cols[4], cols[5], reviewed));
         Files.write(file, lines);
         row.reviewed = reviewed;
@@ -82,7 +82,7 @@ public final class Session {
                 if (lines.get(i).trim().isEmpty()) {
                     continue;
                 }
-                String[] cols = CertPrep.parseCSVLine(lines.get(i));
+                String[] cols = CsvLineParser.parseLine(lines.get(i));
                 if (cols.length >= 2) {
                     try {
                         int currentChapter = Integer.parseInt(cols[0]);

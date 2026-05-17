@@ -21,7 +21,7 @@ public final class QuestionBank {
         List<String> lines = Files.readAllLines(k);
         List<QuestionInfo> questions = new ArrayList<>();
         for (int i = 1; i < lines.size(); i++) {
-            String[] c = CertPrep.parseCSVLine(lines.get(i));
+            String[] c = CsvLineParser.parseLine(lines.get(i));
             int ch = Integer.parseInt(c[0]);
             int q = Integer.parseInt(c[1]);
             if (ch == config.getChapter() && q >= config.getStart() && q <= config.getEnd()) {
