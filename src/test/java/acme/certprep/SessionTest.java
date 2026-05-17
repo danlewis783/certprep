@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class SessionTest {
@@ -65,6 +66,60 @@ class SessionTest {
         assertThat(session.loadRows()).isEmpty();
         assertThat(session.isFullyReviewed()).isFalse();
         assertThat(session.getSummary()).isEmpty();
+    }
+
+    @Test
+    void loadRowsSkipsBlankLines() throws IOException {
+        Path sessionFile = writeSession(
+                "9,38,\"A\",true,60,true,true\n" +
+                        "   \n" +
+                        "9,39,\"B\",true,70,false,false\n");
+        Session session = new Session(sessionFile);
+
+        List<SessionRow> rows = session.loadRows();
+
+        assertThat(rows).hasSize(2);
+        assertThat(rows).extracting(SessionRow::getQuestion).containsExactly(38, 39);
+        assertThat(session.getSummary()).isEqualTo("(Ch9: Q38-39)");
+    }
+
+    @Test
+    void summarySkipsShortAndMalformedRows() throws IOException {
+        Path sessionFile = writeSession(
+                "\n" +
+                        "not-enough-columns\n" +
+                        "bad,number,\"A\",true,60,true,false\n" +
+                        "9,38,\"A\",true,60,true,true\n");
+        Session session = new Session(sessionFile);
+
+        assertThat(session.getSummary()).isEqualTo("(Ch9: Q38-38)");
+    }
+
+    @Test
+    void summaryIsEmptyWhenNoRowsCanBeSummarized() throws IOException {
+        Path sessionFile = writeSession(
+                "not-enough-columns\n" +
+                        "bad,number,\"A\",true,60,true,false\n");
+        Session session = new Session(sessionFile);
+
+        assertThat(session.getSummary()).isEmpty();
+    }
+
+    @Test
+    void missingSessionIsNotFullyReviewedAndHasNoSummary() {
+        Session session = new Session(tempDir.resolve("missing.csv"));
+
+        assertThat(session.isFullyReviewed()).isFalse();
+        assertThat(session.getSummary()).isEmpty();
+    }
+
+    @Test
+    void logAnswerIgnoresWriteFailures() {
+        Session session = new Session(tempDir);
+        QuestionInfo question = new QuestionInfo(10, 2, "C", "A,B,C");
+
+        assertThatCode(() -> session.logAnswer(question, "C", 42, true))
+                .doesNotThrowAnyException();
     }
 
     private Path writeSession(String rows) throws IOException {

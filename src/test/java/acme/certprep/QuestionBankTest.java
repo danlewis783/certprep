@@ -24,6 +24,7 @@ class QuestionBankTest {
                         "9,37,\"A\",\"A,B\"\n" +
                         "9,38,\"A,B\",\"A,B,C\"\n" +
                         "9,39,\"C\",\"A,B,C\"\n" +
+                        "9,40,\"B\",\"A,B,C\"\n" +
                         "10,1,\"D\",\"A,B,C,D\"\n");
         ExamConfig config = new ExamConfig(9, 38, 39, dataDir, tempDir.resolve("sessions"));
 
