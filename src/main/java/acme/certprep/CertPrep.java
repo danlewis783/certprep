@@ -224,7 +224,9 @@ public class CertPrep {
             int correct = 0;
 
             for (int i = 1; i < lines.size(); i++) {
-                if (lines.get(i).trim().isEmpty()) continue;
+                if (lines.get(i).trim().isEmpty()) {
+                    continue;
+                }
                 String[] cols = parseCSVLine(lines.get(i));
                 if (cols.length > 5) {
                     total++;
@@ -262,8 +264,12 @@ public class CertPrep {
             String q = String.format("ch%02d-q%02d.png", r.getChapter(), r.getQuestion());
             String a1 = String.format("ch%02d-q%02d-answer.png", r.getChapter(), r.getQuestion());
             String a2 = String.format("ch%02d-q%02d-ans.png", r.getChapter(), r.getQuestion());
-            if (!Files.exists(config.getDataDir().resolve(q))) missing.add(q);
-            if (!Files.exists(config.getDataDir().resolve(a1)) && !Files.exists(config.getDataDir().resolve(a2))) missing.add(a1 + "/" + a2);
+            if (!Files.exists(config.getDataDir().resolve(q))) {
+                missing.add(q);
+            }
+            if (!Files.exists(config.getDataDir().resolve(a1)) && !Files.exists(config.getDataDir().resolve(a2))) {
+                missing.add(a1 + "/" + a2);
+            }
         }
         if (!missing.isEmpty()) {
             System.err.println(RED + "FATAL: Missing Assets" + RESET);
@@ -289,9 +295,12 @@ public class CertPrep {
         List<String> res = new ArrayList<>();
         boolean q = false; StringBuilder sb = new StringBuilder();
         for (char c : line.toCharArray()) {
-            if (c == '\"') q = !q;
-            else if (c == ',' && !q) { res.add(sb.toString().trim()); sb.setLength(0); }
-            else sb.append(c);
+            if (c == '\"') {
+                q = !q;
+            } else if (c == ',' && !q) { res.add(sb.toString().trim()); sb.setLength(0); }
+            else {
+                sb.append(c);
+            }
         }
         res.add(sb.toString().trim());
         return res.toArray(new String[0]);

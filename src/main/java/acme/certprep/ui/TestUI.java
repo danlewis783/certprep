@@ -129,10 +129,15 @@ class TestUI {
     private void next() {
         QuestionInfo q = bank.get(idx);
         List<String> s = new ArrayList<>();
-        for (JCheckBox b : boxes) if (b.isSelected()) s.add(b.getText());
+        for (JCheckBox b : boxes) {
+            if (b.isSelected()) {
+                s.add(b.getText());
+            }
+        }
         session.logAnswer(q, String.join(",", s), qSec, String.join(",", s).equals(q.getAnswer()));
-        if (idx == bank.size() - 1) System.exit(0);
-        else {
+        if (idx == bank.size() - 1) {
+            System.exit(0);
+        } else {
             idx++;
             load();
         }

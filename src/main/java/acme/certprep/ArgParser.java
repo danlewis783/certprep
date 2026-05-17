@@ -86,9 +86,15 @@ public final class ArgParser {
             String gradeFile
     ) {
         int modes = 0;
-        if (testMode) modes++;
-        if (reviewFile != null) modes++;
-        if (gradeFile != null) modes++;
+        if (testMode) {
+            modes++;
+        }
+        if (reviewFile != null) {
+            modes++;
+        }
+        if (gradeFile != null) {
+            modes++;
+        }
 
         if (modes == 0) {
             return ParseResult.failure("No operational mode specified. Use --test, --review, or --grade.");

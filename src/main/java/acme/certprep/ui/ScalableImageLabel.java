@@ -20,12 +20,16 @@ class ScalableImageLabel extends JLabel {
     @Override
     public void setIcon(Icon icon) {
         super.setIcon(icon);
-        if (icon instanceof ImageIcon) this.originalIcon = (ImageIcon) icon;
+        if (icon instanceof ImageIcon) {
+            this.originalIcon = (ImageIcon) icon;
+        }
     }
 
     @Override
     public Dimension getPreferredSize() {
-        if (fitMode) return new Dimension(10, 10);
+        if (fitMode) {
+            return new Dimension(10, 10);
+        }
         return super.getPreferredSize();
     }
 

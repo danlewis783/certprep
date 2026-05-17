@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +21,9 @@ public class QuestionBank {
             String[] c = CertPrep.parseCSVLine(lines.get(i));
             int ch = Integer.parseInt(c[0]);
             int q = Integer.parseInt(c[1]);
-            if (ch == config.getChapter() && q >= config.getStart() && q <= config.getEnd())
+            if (ch == config.getChapter() && q >= config.getStart() && q <= config.getEnd()) {
                 questions.add(new QuestionInfo(ch, q, c[2], c[3]));
+            }
         }
     }
 
