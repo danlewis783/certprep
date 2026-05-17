@@ -4,12 +4,17 @@ import acme.certprep.ArgParser;
 import acme.certprep.QuestionBank;
 import acme.certprep.SessionManager;
 import acme.certprep.SessionRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Color;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public final class CertPrepUi {
+    private static final Logger logger = LoggerFactory.getLogger(CertPrepUi.class);
+
     private static boolean themeApplied = false;
 
     private CertPrepUi() {

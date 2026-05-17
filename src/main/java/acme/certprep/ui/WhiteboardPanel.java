@@ -1,5 +1,8 @@
 package acme.certprep.ui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -8,6 +11,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 
 class WhiteboardPanel extends JPanel {
+    private static final Logger logger = LoggerFactory.getLogger(WhiteboardPanel.class);
+
     BufferedImage canvas;
     Graphics2D g2d;
     int lx;

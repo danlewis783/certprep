@@ -1,5 +1,8 @@
 package acme.certprep.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -8,6 +11,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 public class GenerateTestData {
+    private static final Logger logger = LoggerFactory.getLogger(GenerateTestData.class);
 
     // --- ANSI COLOR DEFINITIONS ---
     // Format: \033[<STYLE>;<COLOR>m
@@ -88,6 +92,7 @@ public class GenerateTestData {
             System.out.println(GREEN + "Ready for Test and Review modes." + RESET);
 
         } catch (IOException e) {
+            logger.warn("Unable to generate test data", e);
             System.err.println("Error setting up environment: " + e.getMessage());
             e.printStackTrace();
         }

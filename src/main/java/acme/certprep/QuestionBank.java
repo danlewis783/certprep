@@ -1,5 +1,8 @@
 package acme.certprep;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionBank {
+    private static final Logger logger = LoggerFactory.getLogger(QuestionBank.class);
+
     final List<QuestionInfo> questions = new ArrayList<>();
 
     QuestionBank(ArgParser config) throws IOException {

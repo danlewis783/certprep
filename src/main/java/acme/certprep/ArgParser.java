@@ -1,16 +1,21 @@
 package acme.certprep;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ArgParser {
-    Integer chapter = null;
-    Integer start = null;
-    Integer end = null;
+    private static final Logger logger = LoggerFactory.getLogger(ArgParser.class);
+
+    Integer chapter;
+    Integer start;
+    Integer end;
     String dataDir = System.getProperty("user.home") + "/.certprep/data";
     String sessionDir = System.getProperty("user.home") + "/.certprep/sessions";
-    String reviewFile = null;
-    String gradeFile = null;
-    boolean testMode = false;
-    boolean showHelp = false;
-    boolean interactive = false;
+    String reviewFile;
+    String gradeFile;
+    boolean testMode;
+    boolean showHelp;
+    boolean interactive;
 
     ArgParser(String[] args) {
         if (args.length == 0) {

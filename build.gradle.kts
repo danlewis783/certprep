@@ -10,12 +10,15 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
+    implementation(libs.jspecify)
+    implementation(libs.slf4j.api)
+    runtimeOnly(libs.logback.classic)
 }
 
 val toolsSourceSet = sourceSets.create("tools") {
     java.srcDir("src/tools/java")
     compileClasspath += sourceSets["main"].output + configurations["compileClasspath"]
-    runtimeClasspath += output + compileClasspath
+    runtimeClasspath += output + compileClasspath + configurations["runtimeClasspath"]
 }
 
 testing {
@@ -45,6 +48,6 @@ tasks.register<JavaExec>("run") {
 tasks.register<JavaExec>("generateTestData") {
     group = "tools"
     description = "Generate local sample CertPrep data"
-    classpath = toolsSourceSet.runtimeClasspath
+    classpath = toolsSourceSet.runtimeClasspath + sourceSets["main"].runtimeClasspath
     mainClass.set("acme.certprep.util.GenerateTestData")
 }

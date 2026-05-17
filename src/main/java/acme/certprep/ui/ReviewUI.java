@@ -3,6 +3,9 @@ package acme.certprep.ui;
 import acme.certprep.ArgParser;
 import acme.certprep.SessionManager;
 import acme.certprep.SessionRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -12,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 class ReviewUI {
+    private static final Logger logger = LoggerFactory.getLogger(ReviewUI.class);
+
     final JFrame frame;
     final ScalableImageLabel qImgLabel;
     final ScalableImageLabel aImgLabel;
@@ -91,6 +96,7 @@ class ReviewUI {
             try {
                 SessionManager.upd(config, rows.get(ptr), reviewedBox.isSelected());
             } catch (IOException ex) {
+                logger.warn("Unable to update reviewed flag for row {}", ptr, ex);
             }
         });
         fitQBtn.addActionListener(e -> toggleFit(qImgLabel, qScroll, fitQBtn.isSelected()));

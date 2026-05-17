@@ -1,5 +1,8 @@
 package acme.certprep;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SessionManager {
+    private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
+
     Path sessionFile;
 
     SessionManager(ArgParser config) throws IOException {
@@ -66,6 +71,7 @@ public class SessionManager {
             }
             return true;
         } catch (IOException e) {
+            logger.warn("Unable to determine reviewed status for session {}", filename, e);
             return false;
         }
     }
@@ -88,12 +94,15 @@ public class SessionManager {
                         if (ch == -1) ch = currentCh;
                         min = Math.min(min, q);
                         max = Math.max(max, q);
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException e) {
+                        logger.warn("Skipping malformed session row while summarizing {}: {}", filename, lines.get(i), e);
+                    }
                 }
             }
             if (ch == -1) return "";
             return String.format("(Ch%d: Q%d-%d)", ch, min, max);
         } catch (IOException e) {
+            logger.warn("Unable to summarize session {}", filename, e);
             return "";
         }
     }
@@ -102,6 +111,7 @@ public class SessionManager {
         try {
             Files.writeString(sessionFile, String.format("%d,%d,\"%s\",true,%d,%b,false\n", q.ch, q.q, ua, et, ic), StandardOpenOption.APPEND);
         } catch (IOException e) {
+            logger.warn("Unable to append answer to session file {}", sessionFile, e);
         }
     }
 }

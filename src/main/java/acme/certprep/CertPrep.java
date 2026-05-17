@@ -1,6 +1,9 @@
 package acme.certprep;
 
 import acme.certprep.ui.CertPrepUi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Console;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CertPrep {
+    private static final Logger logger = LoggerFactory.getLogger(CertPrep.class);
 
     // ANSI Colors for Console Grading
     private static final String RESET = "\033[0m";
@@ -102,7 +106,9 @@ public class CertPrep {
                             range[0] = Math.min(range[0], q);
                             range[1] = Math.max(range[1], q);
                         }
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException e) {
+                        logger.warn("Skipping question image with unrecognized filename: {}", name, e);
+                    }
                 }
             } catch (IOException e) {
                 System.err.println("Error listing chapters: " + e.getMessage());

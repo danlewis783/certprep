@@ -4,6 +4,9 @@ import acme.certprep.ArgParser;
 import acme.certprep.QuestionBank;
 import acme.certprep.QuestionInfo;
 import acme.certprep.SessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Paths;
@@ -11,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class TestUI {
+    private static final Logger logger = LoggerFactory.getLogger(TestUI.class);
+
     final JFrame frame;
     final ScalableImageLabel imageLabel;
     final JPanel controlPanel;
