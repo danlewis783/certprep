@@ -75,7 +75,9 @@ public class SessionManager {
             Path p = Paths.get(sessionDir, filename);
             List<String> lines = Files.readAllLines(p);
             if (lines.size() <= 1) return "";
-            int ch = -1, min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+            int ch = -1;
+            int min = Integer.MAX_VALUE;
+            int max = Integer.MIN_VALUE;
             for (int i = 1; i < lines.size(); i++) {
                 if (lines.get(i).trim().isEmpty()) continue;
                 String[] cols = CertPrep.parseCSVLine(lines.get(i));

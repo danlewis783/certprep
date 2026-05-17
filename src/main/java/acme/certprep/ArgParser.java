@@ -1,7 +1,9 @@
 package acme.certprep;
 
 public class ArgParser {
-    Integer chapter = null, start = null, end = null;
+    Integer chapter = null;
+    Integer start = null;
+    Integer end = null;
     String dataDir = System.getProperty("user.home") + "/.certprep/data";
     String sessionDir = System.getProperty("user.home") + "/.certprep/sessions";
     String reviewFile = null;

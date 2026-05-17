@@ -10,7 +10,8 @@ import java.awt.image.BufferedImage;
 class WhiteboardPanel extends JPanel {
     BufferedImage canvas;
     Graphics2D g2d;
-    int lx, ly;
+    int lx;
+    int ly;
     final JToggleButton tBtn;
     final JPanel cp;
 
