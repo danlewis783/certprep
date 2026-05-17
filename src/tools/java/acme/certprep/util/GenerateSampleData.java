@@ -10,8 +10,8 @@ import java.nio.file.*;
 import java.util.List;
 import javax.imageio.ImageIO;
 
-public class GenerateTestData {
-    private static final Logger logger = LoggerFactory.getLogger(GenerateTestData.class);
+public class GenerateSampleData {
+    private static final Logger logger = LoggerFactory.getLogger(GenerateSampleData.class);
 
     // --- ANSI COLOR DEFINITIONS ---
     // Format: \033[<STYLE>;<COLOR>m
@@ -36,7 +36,7 @@ public class GenerateTestData {
             }
         }
 
-        System.out.println(CYAN + "Initializing JavaPractice Complete Test Environment..." + RESET);
+        System.out.println(CYAN + "Initializing JavaPractice Complete Exam Environment..." + RESET);
 
         try {
             Path baseDir = Paths.get(".").toAbsolutePath().normalize();
@@ -61,15 +61,15 @@ public class GenerateTestData {
             Files.writeString(dataDir.resolve("master-answer-key.csv"), csvContent);
             System.out.println(GREEN + "Success: Created master-answer-key.csv" + RESET);
 
-            List<TestData> data = List.of(
-                    new TestData(9, 38, "F"),
-                    new TestData(9, 39, "A,B,E"),
-                    new TestData(9, 40, "C"),
-                    new TestData(10, 1, "B"),
-                    new TestData(10, 2, "C,E")
+            List<SampleQuestion> data = List.of(
+                    new SampleQuestion(9, 38, "F"),
+                    new SampleQuestion(9, 39, "A,B,E"),
+                    new SampleQuestion(9, 40, "C"),
+                    new SampleQuestion(10, 1, "B"),
+                    new SampleQuestion(10, 2, "C,E")
             );
 
-            for (TestData item : data) {
+            for (SampleQuestion item : data) {
                 String cPad = String.format("%02d", item.chapter);
                 String qPad = String.format("%02d", item.question);
 
@@ -89,10 +89,10 @@ public class GenerateTestData {
 
             System.out.println("\n" + CYAN + "Environment Setup Complete!" + RESET);
             System.out.println("Total images generated: " + (data.size() * 2));
-            System.out.println(GREEN + "Ready for Test and Review modes." + RESET);
+            System.out.println(GREEN + "Ready for Exam and Review modes." + RESET);
 
         } catch (IOException e) {
-            logger.warn("Unable to generate test data", e);
+            logger.warn("Unable to generate sample data", e);
             System.err.println("Error setting up environment: " + e.getMessage());
             e.printStackTrace();
         }
@@ -129,7 +129,7 @@ public class GenerateTestData {
         ImageIO.write(img, "png", path.toFile());
     }
 
-    private static void generateAnswerImage(Path path, TestData item) throws IOException {
+    private static void generateAnswerImage(Path path, SampleQuestion item) throws IOException {
         BufferedImage img = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

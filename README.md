@@ -16,10 +16,10 @@
 
 ## 3. Command-Line Interface
 * **Interactive Mode:** If no arguments are provided, the application launches an interactive CLI using `java.io.Console`. 
-    * Prompts for mode selection (Test, Review, Grade).
-    * If **Test Mode** is selected, lists available chapters from the data directory and allows selection by number (displaying available question ranges for each), then prompts for Start Question #, and End Question #.
+    * Prompts for mode selection (Exam, Review, Grade).
+    * If **Exam Mode** is selected, lists available chapters from the data directory and allows selection by number (displaying available question ranges for each), then prompts for Start Question #, and End Question #.
     * If **Review** or **Grade Mode** is selected, lists available `.csv` session files from the session directory and allows selection by number.
-* `--test`: Initiates **Timed Test Mode**. Requires `--chapter`, `--start`, and `--end`.
+* `--exam`: Initiates **Timed Exam Mode**. Requires `--chapter`, `--start`, and `--end`.
 * `--chapter <#>`: Filters test to a specific chapter.
 * `--start <#>` / `--end <#>`: Defines a specific question range.
 * `--review <filename>`: Triggers **Untimed Review Mode** for the specified CSV.
@@ -29,7 +29,7 @@
 
 ## 4. Operational Modes
 The application operates in three mutually exclusive modes:
-1. **Test Mode (`--test`)**: Take a timed practice test.
+1. **Exam Mode (`--exam`)**: Take a timed practice exam.
 2. **Review Mode (`--review`)**: Review a previous session's answers.
 3. **Grade Mode (`--grade`)**: Generate a performance report for a session.
 
@@ -45,13 +45,13 @@ One of these modes must be specified for the application to run.
 
 ## 5. Triple Pacing Indicators
 1.  **Question Pacing Bar:** 108-second countdown. (Green: 0-64s, Yellow: 65-100s, Red: 101s+).
-2.  **Test Pacing Bar:** Total session time (Questions * 108s). **Static Color:** Stays Blue (no color shifts).
+2.  **Exam Pacing Bar:** Total session time (Questions * 108s). **Static Color:** Stays Blue (no color shifts).
 3.  **Completion Pace Bar:** Tracks Questions Answered vs. Total Questions.
     * **Green:** Completion % > Time %.
     * **Yellow:** Within a 1-question time buffer (Even with pace).
     * **Red:** Completion % < Time % (Behind pace).
 
-## 6. Test Mode Flow
+## 6. Exam Mode Flow
 * **Continuous Flow:** Upon clicking "Answer," the result is logged, and the next question loads immediately.
 * **No Review:** There is no pause or "Correct/Incorrect" feedback during the test.
 * **Conclusion:** Prints score and total time to the standard console before exiting. No pop-up windows.
@@ -64,6 +64,6 @@ One of these modes must be specified for the application to run.
 * **Reviewed Toggle:** A checkbox that, when toggled, immediately updates the `Reviewed` column (true/false) in the session CSV.
 
 ## 8. Image Scaling (Fit to Screen)
-* **Scalable Labels:** Both Test and Review modes support image scaling.
+* **Scalable Labels:** Both Exam and Review modes support image scaling.
 * **Toggleable Mode:** Toggling "Fit" dynamically scales the image to the pane while preserving aspect ratio. 
 * **Scrollbars:** Re-enabled only when "Fit" mode is off and the image exceeds pane dimensions.

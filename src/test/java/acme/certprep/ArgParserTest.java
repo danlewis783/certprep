@@ -24,9 +24,9 @@ class ArgParserTest {
     }
 
     @Test
-    void parsesTestConfig() {
+    void parsesExamConfig() {
         ParseResult result = parser.parse(new String[]{
-                "--test",
+                "--exam",
                 "--chapter", "9",
                 "--start", "38",
                 "--end", "40",
@@ -35,7 +35,7 @@ class ArgParserTest {
         });
 
         assertThat(result.getStatus()).isEqualTo(ParseResult.Status.SUCCESS);
-        assertThat(result.getConfig()).isInstanceOfSatisfying(TestConfig.class, config -> {
+        assertThat(result.getConfig()).isInstanceOfSatisfying(ExamConfig.class, config -> {
             assertThat(config.getChapter()).isEqualTo(9);
             assertThat(config.getStart()).isEqualTo(38);
             assertThat(config.getEnd()).isEqualTo(40);
@@ -66,12 +66,12 @@ class ArgParserTest {
     void reportsUserFacingFailures() {
         assertThat(parser.parse(new String[]{"--wat"}).getMessage())
                 .isEqualTo("Unknown argument: --wat");
-        assertThat(parser.parse(new String[]{"--test", "--chapter", "1", "--start", "1"}).getMessage())
-                .isEqualTo("--test mode requires --chapter, --start, and --end parameters.");
-        assertThat(parser.parse(new String[]{"--test", "--review", "s.csv", "--chapter", "1", "--start", "1", "--end", "2"}).getMessage())
-                .isEqualTo("Parameters --test, --review, and --grade are mutually exclusive.");
+        assertThat(parser.parse(new String[]{"--exam", "--chapter", "1", "--start", "1"}).getMessage())
+                .isEqualTo("--exam mode requires --chapter, --start, and --end parameters.");
+        assertThat(parser.parse(new String[]{"--exam", "--review", "s.csv", "--chapter", "1", "--start", "1", "--end", "2"}).getMessage())
+                .isEqualTo("Parameters --exam, --review, and --grade are mutually exclusive.");
         assertThat(parser.parse(new String[]{"--chapter", "1"}).getMessage())
-                .isEqualTo("No operational mode specified. Use --test, --review, or --grade.");
+                .isEqualTo("No operational mode specified. Use --exam, --review, or --grade.");
         assertThat(parser.parse(new String[]{"--chapter"}).getMessage())
                 .isEqualTo("--chapter requires a value.");
         assertThat(parser.parse(new String[]{"--chapter", "x"}).getMessage())

@@ -2,7 +2,7 @@ package acme.certprep.ui;
 
 import acme.certprep.QuestionInfo;
 import acme.certprep.Session;
-import acme.certprep.TestConfig;
+import acme.certprep.ExamConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +11,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class TestUI {
-    private static final Logger logger = LoggerFactory.getLogger(TestUI.class);
+class ExamUI {
+    private static final Logger logger = LoggerFactory.getLogger(ExamUI.class);
 
     final JFrame frame;
     final ScalableImageLabel imageLabel;
@@ -28,7 +28,7 @@ class TestUI {
     final JToggleButton fitBtn;
     final WhiteboardPanel wb;
     final List<JCheckBox> boxes = new ArrayList<>();
-    final TestConfig config;
+    final ExamConfig config;
     final List<QuestionInfo> questions;
     final Session session;
     int idx = 0;
@@ -37,7 +37,7 @@ class TestUI {
     final int totalT;
     final Timer timer;
 
-    TestUI(TestConfig config, List<QuestionInfo> questions, Session session) {
+    ExamUI(ExamConfig config, List<QuestionInfo> questions, Session session) {
         this.config = config;
         this.questions = questions;
         this.session = session;

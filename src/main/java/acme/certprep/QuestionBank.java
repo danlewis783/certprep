@@ -16,7 +16,7 @@ public final class QuestionBank {
     private QuestionBank() {
     }
 
-    static List<QuestionInfo> load(TestConfig config) throws IOException {
+    static List<QuestionInfo> load(ExamConfig config) throws IOException {
         Path k = config.getDataDir().resolve("master-answer-key.csv");
         List<String> lines = Files.readAllLines(k);
         List<QuestionInfo> questions = new ArrayList<>();

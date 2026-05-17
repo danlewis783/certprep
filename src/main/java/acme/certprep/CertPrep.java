@@ -61,11 +61,11 @@ public class CertPrep {
                 }
                 validateReviewAssets(reviewConfig, allRows);
                 CertPrepUi.showReview(reviewConfig, session, allRows);
-            } else if (config instanceof TestConfig) {
-                TestConfig testConfig = (TestConfig) config;
-                final List<QuestionInfo> questions = QuestionBank.load(testConfig);
-                final Session session = new SessionRepository(testConfig.getSessionDir()).createNew();
-                CertPrepUi.showTest(testConfig, questions, session);
+            } else if (config instanceof ExamConfig) {
+                ExamConfig examConfig = (ExamConfig) config;
+                final List<QuestionInfo> questions = QuestionBank.load(examConfig);
+                final Session session = new SessionRepository(examConfig.getSessionDir()).createNew();
+                CertPrepUi.showExam(examConfig, questions, session);
             } else {
                 throw new IllegalArgumentException("Unsupported config type: " + config.getClass().getName());
             }
@@ -84,7 +84,7 @@ public class CertPrep {
 
         System.out.println(CYAN + "Welcome to CertPrep Interactive CLI" + RESET);
         System.out.println("Available modes:");
-        System.out.println("  1. Test");
+        System.out.println("  1. Exam");
         System.out.println("  2. Review");
         System.out.println("  3. Grade");
         String choice = readLine(console, scanner, "Select mode (1/2/3): ").trim();
@@ -143,7 +143,7 @@ public class CertPrep {
                 int chapter = chapters.get(index);
                 int start = Integer.parseInt(readLine(console, scanner, "Enter Start Question #: ").trim());
                 int end = Integer.parseInt(readLine(console, scanner, "Enter End Question #: ").trim());
-                return new TestConfig(chapter, start, end, dataDir, sessionDir);
+                return new ExamConfig(chapter, start, end, dataDir, sessionDir);
             } catch (NumberFormatException e) {
                 System.err.println("Error: Input must be a valid number.");
                 System.exit(1);
@@ -277,8 +277,8 @@ public class CertPrep {
     static void printHelp() {
         System.out.println("Usage: java acme.certprep.CertPrep [options]");
         System.out.println("Options:");
-        System.out.println("  --test                Start a new practice test (requires --chapter, --start, --end)");
-        System.out.println("  --chapter <#>         Chapter to test");
+        System.out.println("  --exam                Start a new practice exam (requires --chapter, --start, --end)");
+        System.out.println("  --chapter <#>         Chapter for exam");
         System.out.println("  --start <#>           First question number");
         System.out.println("  --end <#>             Last question number");
         System.out.println("  --review <f>          Navigate/toggle review for a session CSV");

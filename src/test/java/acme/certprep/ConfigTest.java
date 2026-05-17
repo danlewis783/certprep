@@ -14,8 +14,8 @@ class ConfigTest {
     private static final Path SESSION_FILE = SESSION_DIR.resolve("session.csv");
 
     @Test
-    void testConfigRetainsValidValues() {
-        TestConfig config = new TestConfig(2, 3, 4, DATA_DIR, SESSION_DIR);
+    void examConfigRetainsValidValues() {
+        ExamConfig config = new ExamConfig(2, 3, 4, DATA_DIR, SESSION_DIR);
 
         assertThat(config.getChapter()).isEqualTo(2);
         assertThat(config.getStart()).isEqualTo(3);
@@ -25,17 +25,17 @@ class ConfigTest {
     }
 
     @Test
-    void testConfigRejectsInvalidRanges() {
-        assertThatThrownBy(() -> new TestConfig(0, 1, 1, DATA_DIR, SESSION_DIR))
+    void examConfigRejectsInvalidRanges() {
+        assertThatThrownBy(() -> new ExamConfig(0, 1, 1, DATA_DIR, SESSION_DIR))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("chapter must be positive");
-        assertThatThrownBy(() -> new TestConfig(1, 0, 1, DATA_DIR, SESSION_DIR))
+        assertThatThrownBy(() -> new ExamConfig(1, 0, 1, DATA_DIR, SESSION_DIR))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("start must be positive");
-        assertThatThrownBy(() -> new TestConfig(1, 1, 0, DATA_DIR, SESSION_DIR))
+        assertThatThrownBy(() -> new ExamConfig(1, 1, 0, DATA_DIR, SESSION_DIR))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("end must be positive");
-        assertThatThrownBy(() -> new TestConfig(1, 2, 1, DATA_DIR, SESSION_DIR))
+        assertThatThrownBy(() -> new ExamConfig(1, 2, 1, DATA_DIR, SESSION_DIR))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("start must be less than or equal to end");
     }
@@ -56,7 +56,7 @@ class ConfigTest {
     @Test
     void configsRejectNullPaths() {
         assertThatNullPointerException()
-                .isThrownBy(() -> new TestConfig(1, 1, 1, null, SESSION_DIR))
+                .isThrownBy(() -> new ExamConfig(1, 1, 1, null, SESSION_DIR))
                 .withMessage("dataDir");
         assertThatNullPointerException()
                 .isThrownBy(() -> new ReviewConfig(DATA_DIR, SESSION_DIR, null))
@@ -68,7 +68,7 @@ class ConfigTest {
 
     @Test
     void configsNormalizePaths() {
-        TestConfig config = new TestConfig(1, 1, 1, Path.of("data", ".", "chapter", ".."), Path.of("sessions", "."));
+        ExamConfig config = new ExamConfig(1, 1, 1, Path.of("data", ".", "chapter", ".."), Path.of("sessions", "."));
 
         assertThat(config.getDataDir()).isAbsolute();
         assertThat(config.getDataDir()).isEqualTo(normalize(Path.of("data")));

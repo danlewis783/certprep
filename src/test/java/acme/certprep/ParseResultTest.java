@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 class ParseResultTest {
     @Test
     void successContainsConfig() {
-        TestConfig config = new TestConfig(1, 1, 2, Path.of("data"), Path.of("sessions"));
+        ExamConfig config = new ExamConfig(1, 1, 2, Path.of("data"), Path.of("sessions"));
         ParseResult result = ParseResult.success(config);
 
         assertThat(result.getStatus()).isEqualTo(ParseResult.Status.SUCCESS);

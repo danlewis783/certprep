@@ -59,11 +59,11 @@ tasks.register<JavaExec>("run") {
     standardInput = System.`in`
 }
 
-tasks.register<JavaExec>("generateTestData") {
+tasks.register<JavaExec>("generateSampleData") {
     group = "tools"
     description = "Generate local sample CertPrep data"
     classpath = toolsSourceSet.runtimeClasspath + sourceSets["main"].runtimeClasspath
-    mainClass.set("acme.certprep.util.GenerateTestData")
+    mainClass.set("acme.certprep.util.GenerateSampleData")
 }
 
 val jpackageInputDir = layout.buildDirectory.dir("jpackage/input")

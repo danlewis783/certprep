@@ -21,7 +21,7 @@ public final class ArgParser {
         Integer end = null;
         String reviewFile = null;
         String gradeFile = null;
-        boolean testMode = false;
+        boolean examMode = false;
 
         try {
             for (int i = 0; i < args.length; i++) {
@@ -30,8 +30,8 @@ public final class ArgParser {
                     case "--help":
                     case "-h":
                         return ParseResult.help();
-                    case "--test":
-                        testMode = true;
+                    case "--exam":
+                        examMode = true;
                         break;
                     case "--chapter":
                         chapter = parsePositiveInt(readValue(args, ++i, "--chapter"), "--chapter");
@@ -61,14 +61,14 @@ public final class ArgParser {
                 }
             }
 
-            return buildConfig(testMode, chapter, start, end, dataDir, sessionDir, reviewFile, gradeFile);
+            return buildConfig(examMode, chapter, start, end, dataDir, sessionDir, reviewFile, gradeFile);
         } catch (IllegalArgumentException e) {
             return ParseResult.failure(e.getMessage());
         }
     }
 
     private static ParseResult buildConfig(
-            boolean testMode,
+            boolean examMode,
             Integer chapter,
             Integer start,
             Integer end,
@@ -78,7 +78,7 @@ public final class ArgParser {
             String gradeFile
     ) {
         int modes = 0;
-        if (testMode) {
+        if (examMode) {
             modes++;
         }
         if (reviewFile != null) {
@@ -89,16 +89,16 @@ public final class ArgParser {
         }
 
         if (modes == 0) {
-            return ParseResult.failure("No operational mode specified. Use --test, --review, or --grade.");
+            return ParseResult.failure("No operational mode specified. Use --exam, --review, or --grade.");
         }
         if (modes > 1) {
-            return ParseResult.failure("Parameters --test, --review, and --grade are mutually exclusive.");
+            return ParseResult.failure("Parameters --exam, --review, and --grade are mutually exclusive.");
         }
-        if (testMode) {
+        if (examMode) {
             if (chapter == null || start == null || end == null) {
-                return ParseResult.failure("--test mode requires --chapter, --start, and --end parameters.");
+                return ParseResult.failure("--exam mode requires --chapter, --start, and --end parameters.");
             }
-            return ParseResult.success(new TestConfig(chapter, start, end, dataDir, sessionDir));
+            return ParseResult.success(new ExamConfig(chapter, start, end, dataDir, sessionDir));
         }
         if (reviewFile != null) {
             return ParseResult.success(new ReviewConfig(dataDir, sessionDir, resolveSessionFile(sessionDir, reviewFile)));

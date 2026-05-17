@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
 
 @NullMarked
-public final class TestConfig implements Config {
-    private static final Logger logger = LoggerFactory.getLogger(TestConfig.class);
+public final class ExamConfig implements Config {
+    private static final Logger logger = LoggerFactory.getLogger(ExamConfig.class);
 
     private final int chapter;
     private final int start;
@@ -16,7 +16,7 @@ public final class TestConfig implements Config {
     private final Path dataDir;
     private final Path sessionDir;
 
-    public TestConfig(int chapter, int start, int end, Path dataDir, Path sessionDir) {
+    public ExamConfig(int chapter, int start, int end, Path dataDir, Path sessionDir) {
         if (chapter <= 0) {
             throw new IllegalArgumentException("chapter must be positive");
         }

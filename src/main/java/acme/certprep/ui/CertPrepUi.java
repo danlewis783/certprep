@@ -4,7 +4,7 @@ import acme.certprep.QuestionInfo;
 import acme.certprep.ReviewConfig;
 import acme.certprep.Session;
 import acme.certprep.SessionRow;
-import acme.certprep.TestConfig;
+import acme.certprep.ExamConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +46,8 @@ public final class CertPrepUi {
         SwingUtilities.invokeLater(() -> new ReviewUI(config, session, allRows));
     }
 
-    public static void showTest(TestConfig config, List<QuestionInfo> questions, Session session) {
+    public static void showExam(ExamConfig config, List<QuestionInfo> questions, Session session) {
         applyDarkTheme();
-        SwingUtilities.invokeLater(() -> new TestUI(config, questions, session));
+        SwingUtilities.invokeLater(() -> new ExamUI(config, questions, session));
     }
 }
