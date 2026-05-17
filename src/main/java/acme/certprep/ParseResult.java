@@ -61,8 +61,4 @@ public final class ParseResult {
         }
         return message;
     }
-
-    public boolean isSuccess() {
-        return status == Status.SUCCESS;
-    }
 }

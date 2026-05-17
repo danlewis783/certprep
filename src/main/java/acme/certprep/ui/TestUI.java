@@ -1,8 +1,7 @@
 package acme.certprep.ui;
 
-import acme.certprep.QuestionBank;
 import acme.certprep.QuestionInfo;
-import acme.certprep.SessionManager;
+import acme.certprep.Session;
 import acme.certprep.TestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,19 +29,19 @@ class TestUI {
     final WhiteboardPanel wb;
     final List<JCheckBox> boxes = new ArrayList<>();
     final TestConfig config;
-    final QuestionBank bank;
-    final SessionManager session;
+    final List<QuestionInfo> questions;
+    final Session session;
     int idx = 0;
     int qSec = 0;
     int tSec = 0;
     final int totalT;
     final Timer timer;
 
-    TestUI(TestConfig config, QuestionBank bank, SessionManager session) {
+    TestUI(TestConfig config, List<QuestionInfo> questions, Session session) {
         this.config = config;
-        this.bank = bank;
+        this.questions = questions;
         this.session = session;
-        this.totalT = bank.size() * 108;
+        this.totalT = questions.size() * 108;
         frame = new JFrame();
         frame.setUndecorated(true);
         GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
@@ -60,7 +59,7 @@ class TestUI {
         tBar = new JProgressBar(0, totalT);
         tBar.setStringPainted(true);
         tBar.setForeground(new Color(100, 100, 255));
-        cBar = new JProgressBar(0, bank.size());
+        cBar = new JProgressBar(0, questions.size());
         cBar.setStringPainted(true);
         pacingPanel.add(qBar);
         pacingPanel.add(tBar);
@@ -104,14 +103,14 @@ class TestUI {
         tBar.setValue(Math.min(tSec, totalT));
         tBar.setString("Total: " + tSec + "s");
         cBar.setValue(idx);
-        cBar.setString("Done: " + idx + "/" + bank.size());
-        double cP = (double) idx / bank.size();
+        cBar.setString("Done: " + idx + "/" + questions.size());
+        double cP = (double) idx / questions.size();
         double tP = (double) tSec / totalT;
-        cBar.setForeground(cP > tP ? Color.GREEN : (tP - cP <= (1.0 / bank.size()) ? Color.YELLOW : Color.RED));
+        cBar.setForeground(cP > tP ? Color.GREEN : (tP - cP <= (1.0 / questions.size()) ? Color.YELLOW : Color.RED));
     }
 
     private void load() {
-        QuestionInfo q = bank.get(idx);
+        QuestionInfo q = questions.get(idx);
         imageLabel.setIcon(new ImageIcon(config.getDataDir().resolve(String.format("ch%02d-q%02d.png", q.getChapter(), q.getQuestion())).toString()));
         checkboxPanel.removeAll();
         boxes.clear();
@@ -127,7 +126,7 @@ class TestUI {
     }
 
     private void next() {
-        QuestionInfo q = bank.get(idx);
+        QuestionInfo q = questions.get(idx);
         List<String> s = new ArrayList<>();
         for (JCheckBox b : boxes) {
             if (b.isSelected()) {
@@ -135,7 +134,7 @@ class TestUI {
             }
         }
         session.logAnswer(q, String.join(",", s), qSec, String.join(",", s).equals(q.getAnswer()));
-        if (idx == bank.size() - 1) {
+        if (idx == questions.size() - 1) {
             System.exit(0);
         } else {
             idx++;

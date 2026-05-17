@@ -53,18 +53,19 @@ public class CertPrep {
                 runGradingReport((GradeConfig) config);
             } else if (config instanceof ReviewConfig) {
                 ReviewConfig reviewConfig = (ReviewConfig) config;
-                final List<SessionRow> allRows = SessionManager.loadAllForReview(reviewConfig);
+                Session session = new SessionRepository(reviewConfig.getSessionDir()).existing(reviewConfig.getSessionFile());
+                final List<SessionRow> allRows = session.loadRows();
                 if (allRows.isEmpty()) {
                     System.out.println("The session file appears to be empty.");
                     System.exit(0);
                 }
                 validateReviewAssets(reviewConfig, allRows);
-                CertPrepUi.showReview(reviewConfig, allRows);
+                CertPrepUi.showReview(reviewConfig, session, allRows);
             } else if (config instanceof TestConfig) {
                 TestConfig testConfig = (TestConfig) config;
-                final QuestionBank bank = new QuestionBank(testConfig);
-                final SessionManager session = new SessionManager(testConfig);
-                CertPrepUi.showTest(testConfig, bank, session);
+                final List<QuestionInfo> questions = QuestionBank.load(testConfig);
+                final Session session = new SessionRepository(testConfig.getSessionDir()).createNew();
+                CertPrepUi.showTest(testConfig, questions, session);
             } else {
                 throw new IllegalArgumentException("Unsupported config type: " + config.getClass().getName());
             }
@@ -79,6 +80,7 @@ public class CertPrep {
         Scanner scanner = (console == null) ? new Scanner(System.in) : null;
         Path dataDir = ArgParser.defaultDataDir();
         Path sessionDir = ArgParser.defaultSessionDir();
+        SessionRepository sessionRepository = new SessionRepository(sessionDir);
 
         System.out.println(CYAN + "Welcome to CertPrep Interactive CLI" + RESET);
         System.out.println("Available modes:");
@@ -153,42 +155,44 @@ public class CertPrep {
                 System.exit(1);
             }
 
-            List<String> sessions = new ArrayList<>();
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(sessionDir, "*.csv")) {
-                for (Path entry : stream) {
-                    sessions.add(entry.getFileName().toString());
-                }
+            List<Session> availableSessions;
+            try {
+                availableSessions = sessionRepository.listSessions();
             } catch (IOException e) {
                 System.err.println("Error listing sessions: " + e.getMessage());
                 System.exit(1);
+                throw new IllegalStateException("Unable to list sessions", e);
             }
 
-            if (sessions.isEmpty()) {
+            if (availableSessions.isEmpty()) {
                 System.err.println("No session files found in " + sessionDir);
                 System.exit(1);
             }
 
-            sessions.sort(Collections.reverseOrder());
             System.out.println("\nSessions found:");
-            for (int i = 0; i < sessions.size(); i++) {
-                String name = sessions.get(i);
-                boolean reviewed = SessionManager.isFullyReviewed(sessionDir, name);
-                String summary = SessionManager.getSessionSummary(sessionDir, name);
-                System.out.printf("  %d. %s %s %s\n", i + 1, name, summary, reviewed ? (GREEN + "[REVIEWED]" + RESET) : "");
+            for (int i = 0; i < availableSessions.size(); i++) {
+                Session session = availableSessions.get(i);
+                System.out.printf(
+                        "  %d. %s %s %s\n",
+                        i + 1,
+                        session.getDisplayName(),
+                        session.getSummary(),
+                        session.isFullyReviewed() ? (GREEN + "[REVIEWED]" + RESET) : ""
+                );
             }
 
             String sessionChoice = readLine(console, scanner, "Select session #: ").trim();
             try {
                 int index = Integer.parseInt(sessionChoice) - 1;
-                if (index < 0 || index >= sessions.size()) {
+                if (index < 0 || index >= availableSessions.size()) {
                     System.err.println("Error: Invalid choice.");
                     System.exit(1);
                 }
-                Path sessionFile = sessionDir.resolve(sessions.get(index));
+                Session session = availableSessions.get(index);
                 if (isReview) {
-                    return new ReviewConfig(dataDir, sessionDir, sessionFile);
+                    return new ReviewConfig(dataDir, sessionDir, session.getFile());
                 } else {
-                    return new GradeConfig(dataDir, sessionDir, sessionFile);
+                    return new GradeConfig(dataDir, sessionDir, session.getFile());
                 }
             } catch (NumberFormatException e) {
                 System.err.println("Error: Input must be a valid number.");
@@ -213,31 +217,23 @@ public class CertPrep {
 
     private static void runGradingReport(GradeConfig config) {
         try {
-            Path path = config.getSessionFile();
-            if (!Files.exists(path)) {
-                System.err.println(RED + "Error: Session file not found: " + path + RESET);
+            Session session = new SessionRepository(config.getSessionDir()).existing(config.getSessionFile());
+            if (!Files.exists(session.getFile())) {
+                System.err.println(RED + "Error: Session file not found: " + session.getFile() + RESET);
                 return;
             }
 
-            List<String> lines = Files.readAllLines(path);
-            int total = 0;
+            List<SessionRow> rows = session.loadRows();
+            int total = rows.size();
             int correct = 0;
-
-            for (int i = 1; i < lines.size(); i++) {
-                if (lines.get(i).trim().isEmpty()) {
-                    continue;
-                }
-                String[] cols = parseCSVLine(lines.get(i));
-                if (cols.length > 5) {
-                    total++;
-                    if (Boolean.parseBoolean(cols[5])) {
-                        correct++;
-                    }
+            for (SessionRow row : rows) {
+                if (row.isCorrect()) {
+                    correct++;
                 }
             }
 
             if (total == 0) {
-                System.out.println(RED + "No questions found in session: " + config.getSessionFile().getFileName() + RESET);
+                System.out.println(RED + "No questions found in session: " + session.getDisplayName() + RESET);
                 return;
             }
 
@@ -245,7 +241,7 @@ public class CertPrep {
             String color = (percent >= 68.0) ? GREEN : RED;
 
             System.out.println("\n" + CYAN + "========================================" + RESET);
-            System.out.println(" SESSION GRADE REPORT: " + config.getSessionFile().getFileName());
+            System.out.println(" SESSION GRADE REPORT: " + session.getDisplayName());
             System.out.println(CYAN + "========================================" + RESET);
             System.out.println(" Total Questions: " + total);
             System.out.println(" Number Correct:  " + correct);

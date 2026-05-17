@@ -1,8 +1,8 @@
 package acme.certprep.ui;
 
-import acme.certprep.QuestionBank;
+import acme.certprep.QuestionInfo;
 import acme.certprep.ReviewConfig;
-import acme.certprep.SessionManager;
+import acme.certprep.Session;
 import acme.certprep.SessionRow;
 import acme.certprep.TestConfig;
 import org.slf4j.Logger;
@@ -41,13 +41,13 @@ public final class CertPrepUi {
         themeApplied = true;
     }
 
-    public static void showReview(ReviewConfig config, List<SessionRow> allRows) {
+    public static void showReview(ReviewConfig config, Session session, List<SessionRow> allRows) {
         applyDarkTheme();
-        SwingUtilities.invokeLater(() -> new ReviewUI(config, allRows));
+        SwingUtilities.invokeLater(() -> new ReviewUI(config, session, allRows));
     }
 
-    public static void showTest(TestConfig config, QuestionBank bank, SessionManager session) {
+    public static void showTest(TestConfig config, List<QuestionInfo> questions, Session session) {
         applyDarkTheme();
-        SwingUtilities.invokeLater(() -> new TestUI(config, bank, session));
+        SwingUtilities.invokeLater(() -> new TestUI(config, questions, session));
     }
 }

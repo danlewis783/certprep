@@ -1,7 +1,7 @@
 package acme.certprep.ui;
 
 import acme.certprep.ReviewConfig;
-import acme.certprep.SessionManager;
+import acme.certprep.Session;
 import acme.certprep.SessionRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +30,13 @@ class ReviewUI {
     final JScrollPane aScroll;
     final List<SessionRow> rows;
     final ReviewConfig config;
+    final Session session;
 
     int ptr = 0;
 
-    ReviewUI(ReviewConfig config, List<SessionRow> rows) {
+    ReviewUI(ReviewConfig config, Session session, List<SessionRow> rows) {
         this.config = config;
+        this.session = session;
         this.rows = rows;
         frame = new JFrame("JavaPractice Review Mode - " + config.getSessionFile().getFileName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -93,7 +95,7 @@ class ReviewUI {
         exitBtn.addActionListener(e -> System.exit(0));
         reviewedBox.addActionListener(e -> {
             try {
-                SessionManager.upd(config, rows.get(ptr), reviewedBox.isSelected());
+                session.updateReviewed(rows.get(ptr), reviewedBox.isSelected());
             } catch (IOException ex) {
                 logger.warn("Unable to update reviewed flag for row {}", ptr, ex);
             }
