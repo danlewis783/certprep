@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.Objects;
 
 @NullMarked
 public final class GradeConfig implements Config {
@@ -16,9 +15,9 @@ public final class GradeConfig implements Config {
     private final Path sessionFile;
 
     public GradeConfig(Path dataDir, Path sessionDir, Path sessionFile) {
-        this.dataDir = Objects.requireNonNull(dataDir, "dataDir");
-        this.sessionDir = Objects.requireNonNull(sessionDir, "sessionDir");
-        this.sessionFile = Objects.requireNonNull(sessionFile, "sessionFile");
+        this.dataDir = ConfigPaths.normalize(dataDir, "dataDir");
+        this.sessionDir = ConfigPaths.normalize(sessionDir, "sessionDir");
+        this.sessionFile = ConfigPaths.normalize(sessionFile, "sessionFile");
     }
 
     @Override

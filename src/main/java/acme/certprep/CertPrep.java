@@ -78,8 +78,8 @@ public class CertPrep {
     private static Config runInteractiveMode() {
         Console console = System.console();
         Scanner scanner = (console == null) ? new Scanner(System.in) : null;
-        Path dataDir = ArgParser.defaultDataDir();
-        Path sessionDir = ArgParser.defaultSessionDir();
+        Path dataDir = ConfigDefaults.dataDir();
+        Path sessionDir = ConfigDefaults.sessionDir();
         SessionRepository sessionRepository = new SessionRepository(sessionDir);
 
         System.out.println(CYAN + "Welcome to CertPrep Interactive CLI" + RESET);

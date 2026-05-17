@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.Objects;
 
 @NullMarked
 public final class TestConfig implements Config {
@@ -34,8 +33,8 @@ public final class TestConfig implements Config {
         this.chapter = chapter;
         this.start = start;
         this.end = end;
-        this.dataDir = Objects.requireNonNull(dataDir, "dataDir");
-        this.sessionDir = Objects.requireNonNull(sessionDir, "sessionDir");
+        this.dataDir = ConfigPaths.normalize(dataDir, "dataDir");
+        this.sessionDir = ConfigPaths.normalize(sessionDir, "sessionDir");
     }
 
     public int getChapter() {

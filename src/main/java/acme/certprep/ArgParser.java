@@ -14,8 +14,8 @@ public final class ArgParser {
             return ParseResult.interactive();
         }
 
-        Path dataDir = defaultDataDir();
-        Path sessionDir = defaultSessionDir();
+        Path dataDir = ConfigDefaults.dataDir();
+        Path sessionDir = ConfigDefaults.sessionDir();
         Integer chapter = null;
         Integer start = null;
         Integer end = null;
@@ -65,14 +65,6 @@ public final class ArgParser {
         } catch (IllegalArgumentException e) {
             return ParseResult.failure(e.getMessage());
         }
-    }
-
-    public static Path defaultDataDir() {
-        return Paths.get(System.getProperty("user.home"), ".certprep", "data");
-    }
-
-    public static Path defaultSessionDir() {
-        return Paths.get(System.getProperty("user.home"), ".certprep", "sessions");
     }
 
     private static ParseResult buildConfig(

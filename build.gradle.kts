@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.jspecify)
     implementation(libs.slf4j.api)
     runtimeOnly(libs.logback.classic)
+    testImplementation(libs.assertj)
 }
 
 val toolsSourceSet = sourceSets.create("tools") {
