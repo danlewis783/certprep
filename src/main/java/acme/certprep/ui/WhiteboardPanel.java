@@ -11,8 +11,8 @@ class WhiteboardPanel extends JPanel {
     BufferedImage canvas;
     Graphics2D g2d;
     int lx, ly;
-    JToggleButton tBtn;
-    JPanel cp;
+    final JToggleButton tBtn;
+    final JPanel cp;
 
     WhiteboardPanel() {
         setLayout(new BorderLayout());

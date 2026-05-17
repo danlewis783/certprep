@@ -11,20 +11,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 class TestUI {
-    JFrame frame;
-    ScalableImageLabel imageLabel;
-    JPanel controlPanel, checkboxPanel, pacingPanel;
-    JScrollPane scrollPane;
-    JProgressBar qBar, tBar, cBar;
-    JButton actionBtn;
-    JToggleButton wbBtn, fitBtn;
-    WhiteboardPanel wb;
-    List<JCheckBox> boxes = new ArrayList<>();
-    ArgParser config;
-    QuestionBank bank;
-    SessionManager session;
-    int idx = 0, qSec = 0, tSec = 0, totalT;
-    Timer timer;
+    final JFrame frame;
+    final ScalableImageLabel imageLabel;
+    final JPanel controlPanel;
+    final JPanel checkboxPanel;
+    final JPanel pacingPanel;
+    final JScrollPane scrollPane;
+    final JProgressBar qBar;
+    final JProgressBar tBar;
+    final JProgressBar cBar;
+    final JButton actionBtn;
+    final JToggleButton wbBtn;
+    final JToggleButton fitBtn;
+    final WhiteboardPanel wb;
+    final List<JCheckBox> boxes = new ArrayList<>();
+    final ArgParser config;
+    final QuestionBank bank;
+    final SessionManager session;
+    int idx = 0;
+    int qSec = 0;
+    int tSec = 0;
+    final int totalT;
+    final Timer timer;
 
     TestUI(ArgParser config, QuestionBank bank, SessionManager session) {
         this.config = config;

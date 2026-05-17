@@ -4,9 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class QuestionInfo {
-    int ch, q;
-    String a;
-    List<String> p;
+    final int ch;
+    final int q;
+    final String a;
+    final List<String> p;
 
     QuestionInfo(int ch, int q, String a, String p) {
         this.ch = ch;

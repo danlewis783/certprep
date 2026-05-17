@@ -12,16 +12,22 @@ import java.nio.file.Paths;
 import java.util.List;
 
 class ReviewUI {
-    JFrame frame;
-    ScalableImageLabel qImgLabel, aImgLabel;
-    JLabel infoLabel;
-    JCheckBox reviewedBox;
-    JToggleButton fitQBtn, fitABtn;
-    JButton prevBtn, nextBtn, exitBtn;
-    JScrollPane qScroll, aScroll;
-    List<SessionRow> rows;
+    final JFrame frame;
+    final ScalableImageLabel qImgLabel;
+    final ScalableImageLabel aImgLabel;
+    final JLabel infoLabel;
+    final JCheckBox reviewedBox;
+    final JToggleButton fitQBtn;
+    final JToggleButton fitABtn;
+    final JButton prevBtn;
+    final JButton nextBtn;
+    final JButton exitBtn;
+    final JScrollPane qScroll;
+    final JScrollPane aScroll;
+    final List<SessionRow> rows;
+    final ArgParser config;
+
     int ptr = 0;
-    ArgParser config;
 
     ReviewUI(ArgParser config, List<SessionRow> rows) {
         this.config = config;

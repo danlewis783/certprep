@@ -1,9 +1,13 @@
 package acme.certprep;
 
 public class SessionRow {
-    int chapter, question, time, lineIndex;
-    String userAnswer;
-    boolean correct, reviewed;
+    final int chapter;
+    final int question;
+    final int time;
+    final int lineIndex;
+    final String userAnswer;
+    final boolean correct;
+    boolean reviewed;
 
     SessionRow(String line, int idx) {
         String[] c = CertPrep.parseCSVLine(line);

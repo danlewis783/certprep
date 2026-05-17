@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionBank {
-    List<QuestionInfo> questions = new ArrayList<>();
+    final List<QuestionInfo> questions = new ArrayList<>();
 
     QuestionBank(ArgParser config) throws IOException {
         Path k = Paths.get(config.dataDir, "master-answer-key.csv");

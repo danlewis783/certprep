@@ -2,7 +2,6 @@ package acme.certprep;
 
 import acme.certprep.ui.CertPrepUi;
 import java.io.Console;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -161,7 +160,7 @@ public class CertPrep {
                 System.exit(1);
             }
 
-            Collections.sort(sessions, Collections.reverseOrder());
+            sessions.sort(Collections.reverseOrder());
             System.out.println("\nSessions found:");
             for (int i = 0; i < sessions.size(); i++) {
                 String name = sessions.get(i);
@@ -255,7 +254,7 @@ public class CertPrep {
         }
     }
 
-    private static void validateReviewAssets(ArgParser config, List<SessionRow> rows) throws FileNotFoundException {
+    private static void validateReviewAssets(ArgParser config, List<SessionRow> rows) {
         List<String> missing = new ArrayList<>();
         for (SessionRow r : rows) {
             String q = String.format("ch%02d-q%02d.png", r.chapter, r.question);
