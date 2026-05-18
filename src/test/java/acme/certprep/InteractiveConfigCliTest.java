@@ -13,6 +13,7 @@ import java.util.Queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 class InteractiveConfigCliTest {
     @TempDir
@@ -35,6 +36,27 @@ class InteractiveConfigCliTest {
             assertThat(examConfig.getStart()).isEqualTo(38);
             assertThat(examConfig.getEnd()).isEqualTo(40);
         });
+    }
+
+    @Test
+    void displaysChapterQuestionRangeFromCollectedQuestions() throws Exception {
+        Path dataDir = tempDir.resolve("data");
+        Files.createDirectories(dataDir);
+        Files.writeString(dataDir.resolve(CertPrepFiles.questionImageName(9, 40)), "");
+        Files.writeString(dataDir.resolve(CertPrepFiles.questionImageName(9, 38)), "");
+        Files.writeString(dataDir.resolve(CertPrepFiles.questionImageName(9, 39)), "");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Queue<String> responses = new ArrayDeque<>(java.util.List.of("1", "1", "38", "40"));
+        InteractiveConfigCli cli = new InteractiveConfigCli(
+                dataDir,
+                tempDir.resolve("sessions"),
+                prompt -> responses.remove(),
+                new PrintStream(out)
+        );
+
+        cli.prompt();
+
+        assertThat(out.toString()).contains("Chapter 9 (Q38-40)");
     }
 
     @Test
@@ -102,7 +124,9 @@ class InteractiveConfigCliTest {
     void rejectsNonNumericExamInput() throws IOException {
         Path dataDir = tempDir.resolve("data");
         Files.createDirectories(dataDir);
-        Files.writeString(dataDir.resolve(CertPrepFiles.questionImageName(9, 38)), "");
+        String questionImageName = CertPrepFiles.questionImageName(9, 38);
+        Path resolvedFileName = dataDir.resolve(questionImageName);
+        Files.writeString(resolvedFileName, "");
         InteractiveConfigCli cli = cli(dataDir, tempDir.resolve("sessions"), "1", "x");
 
         assertThatExceptionOfType(InteractiveConfigException.class)
@@ -170,6 +194,80 @@ class InteractiveConfigCliTest {
         assertThatExceptionOfType(InteractiveConfigException.class)
                 .isThrownBy(cli::prompt)
                 .withMessageContaining("Error listing sessions:");
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberRejectsNull() {
+        assertThatNullPointerException().isThrownBy(() -> InteractiveConfigCli.parseChapterAndQuestionNumber(null));
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_Empty() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_Whitespace() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber(" ")).isEmpty();
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber(" \t \n")).isEmpty();
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("\t\n  ")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_noDot() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q1")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_wrongPrefix() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("zz01-q1.png")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_noMinusQ() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-r1.png")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_nonNumericChapter() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("chXX-q1.png")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_nonNumericQuestion() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-qX.png")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_negativeQuestion() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q-2.png")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_questionZero() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q0.png")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_chapterZero() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch00-q2.png")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberInvalid_extensionLengthMustBe3Or4() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q1.")).isEmpty();
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q1.1")).isEmpty();
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q1.12")).isEmpty();
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q1.12345")).isEmpty();
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q1.123456")).isEmpty();
+    }
+
+    @Test
+    void parseChapterAndQuestionNumberValid() {
+        assertThat(InteractiveConfigCli.parseChapterAndQuestionNumber("ch01-q2.png")).hasValueSatisfying(chapterAndQuestion -> {
+            assertThat(chapterAndQuestion.getChapter()).isEqualTo(1);
+            assertThat(chapterAndQuestion.getQuestion()).isEqualTo(2);
+        });
     }
 
     private InteractiveConfigCli cli(Path dataDir, Path sessionDir, String... responses) {

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 
 @NullMarked
@@ -65,8 +66,8 @@ public final class InteractiveConfigCli {
             throw new InteractiveConfigException("Data directory does not exist: " + dataDir);
         }
 
-        Map<Integer, int[]> chapterRanges = loadChapterRanges();
-        List<Integer> chapters = new ArrayList<>(chapterRanges.keySet());
+        Map<Integer, List<Integer>> chapterQuestions = loadChapterQuestions();
+        List<Integer> chapters = new ArrayList<>(chapterQuestions.keySet());
         if (chapters.isEmpty()) {
             throw new InteractiveConfigException("No chapter files found in " + dataDir);
         }
@@ -75,8 +76,9 @@ public final class InteractiveConfigCli {
         out.println("\nChapters found:");
         for (int i = 0; i < chapters.size(); i++) {
             int chapter = chapters.get(i);
-            int[] range = chapterRanges.get(chapter);
-            out.printf("  %d. Chapter %d (Q%d-%d)\n", i + 1, chapter, range[0], range[1]);
+            List<Integer> questions = chapterQuestions.get(chapter);
+            Collections.sort(questions);
+            out.printf("  %d. Chapter %d (Q%d-%d)\n", i + 1, chapter, questions.get(0), questions.get(questions.size() - 1));
         }
 
         try {
@@ -93,34 +95,84 @@ public final class InteractiveConfigCli {
         }
     }
 
-    private Map<Integer, int[]> loadChapterRanges() throws InteractiveConfigException {
-        Map<Integer, int[]> chapterRanges = new HashMap<>();
+    private Map<Integer, List<Integer>> loadChapterQuestions() throws InteractiveConfigException {
+        Map<Integer, List<Integer>> chapterQuestions = new HashMap<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dataDir, CertPrepFiles.QUESTION_IMAGE_GLOB)) {
             for (Path entry : stream) {
                 String name = entry.getFileName().toString();
-                tryAddChapterRange(chapterRanges, name);
+                tryAddChapterQuestion(chapterQuestions, name);
             }
         } catch (IOException e) {
             throw new InteractiveConfigException("Error listing chapters: " + e.getMessage(), e);
         }
-        return chapterRanges;
+        return chapterQuestions;
     }
 
-    private void tryAddChapterRange(Map<Integer, int[]> chapterRanges, String name) {
-        try {
-            int dashIndex = name.indexOf('-');
-            int qIndex = name.indexOf("-q");
-            int dotIndex = name.lastIndexOf('.');
-            if (dashIndex > 2 && qIndex != -1 && dotIndex != -1) {
-                int chapter = Integer.parseInt(name.substring(2, dashIndex));
-                int question = Integer.parseInt(name.substring(qIndex + 2, dotIndex));
-                int[] range = chapterRanges.computeIfAbsent(chapter, key -> new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE});
-                range[0] = Math.min(range[0], question);
-                range[1] = Math.max(range[1], question);
-            }
-        } catch (NumberFormatException e) {
-            logger.warn("Skipping question image with unrecognized filename: {}", name, e);
+    private void tryAddChapterQuestion(Map<Integer, List<Integer>> chapterQuestions, String name) {
+        Optional<ChapterAndQuestion> maybeChapterAndQuestion = parseChapterAndQuestionNumber(name);
+        maybeChapterAndQuestion.ifPresent(chapterAndQuestion ->
+                chapterQuestions.computeIfAbsent(
+                        chapterAndQuestion.chapter, key -> new ArrayList<>()).add(chapterAndQuestion.question));
+    }
+
+    static class ChapterAndQuestion {
+        private final int chapter;
+        private final int question;
+
+        ChapterAndQuestion(int chapter, int question) {
+            this.chapter = chapter;
+            this.question = question;
         }
+
+        int getChapter() {
+            return chapter;
+        }
+
+        int getQuestion() {
+            return question;
+        }
+    }
+
+    static Optional<ChapterAndQuestion> parseChapterAndQuestionNumber(String name) {
+        if (! name.startsWith("ch")) {
+            logger.warn("Unrecognized filename: '{}' must start with 'ch'.", name);
+            return Optional.empty();
+        }
+        int chIndex = name.indexOf("ch");
+        int dashIndex = name.indexOf('-');
+        int qIndex = name.indexOf("-q");
+        int dotIndex = name.lastIndexOf('.');
+        int nameLen = name.length();
+        int extLen = nameLen - (dotIndex + 1);
+        if (chIndex == 0 && dashIndex > 2 && qIndex != -1 && dotIndex != -1 && (extLen == 3 || extLen == 4)) {
+            int chapter;
+            try {
+                chapter = Integer.parseInt(name.substring(2, dashIndex));
+            } catch (NumberFormatException e) {
+                logger.warn("Unrecognized chapter in filename: '{}'", name, e);
+                return Optional.empty();
+            }
+            if (chapter < 1) {
+                logger.warn("Invalid chapter number {} in filename: '{}'", chapter, name);
+                return Optional.empty();
+            }
+
+            int question;
+            try {
+                question = Integer.parseInt(name.substring(qIndex + 2, dotIndex));
+            } catch (NumberFormatException e) {
+                logger.warn("Unrecognized question in filename: '{}'", name, e);
+                return Optional.empty();
+            }
+
+            if (question < 1) {
+                logger.warn("Invalid question number {} in filename: '{}'", question, name);
+                return Optional.empty();
+            }
+
+            return Optional.of(new ChapterAndQuestion(chapter, question));
+        }
+        return Optional.empty();
     }
 
     private Config promptForExistingSession(SessionRepository sessionRepository, boolean review) throws InteractiveConfigException {

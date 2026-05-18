@@ -52,7 +52,6 @@ public final class ArgParser {
                         reviewFile = readValue(args, ++i, "--review");
                         break;
                     case "--grade":
-                    case "-grade":
                         String option = args[i];
                         gradeFile = readValue(args, ++i, option);
                         break;
