@@ -36,6 +36,7 @@ class ReviewAssetValidatorTest {
                 CertPrepFiles.questionImageName(9, 40),
                 CertPrepFiles.answerImageName(9, 40) + "/" + CertPrepFiles.alternateAnswerImageName(9, 40)
         );
+        //noinspection DataFlowIssue
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> missing.add("extra"));
     }
 }

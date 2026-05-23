@@ -1,6 +1,5 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 
-@NullMarked
 public final class InteractiveConfigCli {
     private static final Logger logger = LoggerFactory.getLogger(InteractiveConfigCli.class);
 

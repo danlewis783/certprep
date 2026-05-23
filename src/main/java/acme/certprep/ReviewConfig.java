@@ -1,10 +1,8 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 
 import java.nio.file.Path;
 
-@NullMarked
 public final class ReviewConfig implements Config {
 
     private final Path dataDir;

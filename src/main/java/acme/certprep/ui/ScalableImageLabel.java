@@ -1,11 +1,13 @@
 package acme.certprep.ui;
 
+import org.jspecify.annotations.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 
 class ScalableImageLabel extends JLabel {
 
-    private ImageIcon originalIcon;
+    private @Nullable ImageIcon originalIcon;
     private boolean fitMode = false;
 
     public ScalableImageLabel() {

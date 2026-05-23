@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.jspecify)
+    compileOnly(libs.jspecify)
     implementation(libs.slf4j.api)
     runtimeOnly(libs.logback.classic)
     testImplementation(libs.assertj)

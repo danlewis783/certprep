@@ -198,6 +198,7 @@ class InteractiveConfigCliTest {
 
     @Test
     void parseChapterAndQuestionNumberRejectsNull() {
+        //noinspection DataFlowIssue
         assertThatNullPointerException().isThrownBy(() -> InteractiveConfigCli.parseChapterAndQuestionNumber(null));
     }
 

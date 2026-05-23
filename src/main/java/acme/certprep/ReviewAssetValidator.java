@@ -1,13 +1,11 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@NullMarked
 public final class ReviewAssetValidator {
 
     public List<String> missingAssets(ReviewConfig config, List<SessionRow> rows) {

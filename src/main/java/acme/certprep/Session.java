@@ -1,6 +1,5 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@NullMarked
 public final class Session {
     private static final Logger logger = LoggerFactory.getLogger(Session.class);
 

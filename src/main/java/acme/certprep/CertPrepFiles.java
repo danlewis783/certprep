@@ -1,8 +1,6 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 
-@NullMarked
 public final class CertPrepFiles {
 
     public static final String MASTER_ANSWER_KEY_FILENAME = "master-answer-key.csv";

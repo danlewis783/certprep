@@ -1,5 +1,7 @@
 package acme.certprep.ui;
 
+import org.jspecify.annotations.Nullable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -9,8 +11,8 @@ import java.awt.image.BufferedImage;
 
 class WhiteboardPanel extends JPanel {
 
-    BufferedImage canvas;
-    Graphics2D g2d;
+    @Nullable BufferedImage canvas;
+    @Nullable Graphics2D g2d;
     int lx;
     int ly;
     final JToggleButton tBtn;
@@ -57,7 +59,7 @@ class WhiteboardPanel extends JPanel {
         });
         cp.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
-                if (!tBtn.isSelected() && canvas != null) {
+                if (!tBtn.isSelected() && canvas != null && g2d != null) {
                     g2d.drawLine(lx, ly, e.getX(), e.getY());
                     lx = e.getX();
                     ly = e.getY();
@@ -66,11 +68,13 @@ class WhiteboardPanel extends JPanel {
             }
         });
         dBtn.addActionListener(e -> {
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-            g2d.setColor(Color.WHITE);
-            cp.removeAll();
-            cp.repaint();
+            if (g2d != null && canvas != null) {
+                g2d.setColor(Color.BLACK);
+                g2d.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                g2d.setColor(Color.WHITE);
+                cp.removeAll();
+                cp.repaint();
+            }
         });
         add(cp, BorderLayout.CENTER);
     }
@@ -79,7 +83,9 @@ class WhiteboardPanel extends JPanel {
         JTextField f = new JTextField();
         f.setBounds(x, y, 200, 30);
         f.addActionListener(e -> {
-            g2d.drawString(f.getText(), f.getX() + 4, f.getY() + 22);
+            if (g2d != null) {
+                g2d.drawString(f.getText(), f.getX() + 4, f.getY() + 22);
+            }
             cp.remove(f);
             cp.repaint();
         });

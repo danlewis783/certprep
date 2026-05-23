@@ -35,6 +35,7 @@ class QuestionBankTest {
                 .extracting(QuestionInfo::getQuestion)
                 .containsExactly(38, 39);
         assertThat(questions.get(0).getAnswer()).isEqualTo("A,B");
+        //noinspection DataFlowIssue
         assertThatExceptionOfType(UnsupportedOperationException.class)
                 .isThrownBy(() -> questions.add(new QuestionInfo(9, 40, "A", "A,B")));
     }

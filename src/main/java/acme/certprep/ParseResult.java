@@ -1,11 +1,9 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
-@NullMarked
 public final class ParseResult {
 
     public enum Status {

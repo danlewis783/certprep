@@ -38,9 +38,11 @@ class ParseResultTest {
 
     @Test
     void factoriesRejectNullRequiredValues() {
+        //noinspection DataFlowIssue
         assertThatNullPointerException()
                 .isThrownBy(() -> ParseResult.success(null))
                 .withMessage("config");
+        //noinspection DataFlowIssue
         assertThatNullPointerException()
                 .isThrownBy(() -> ParseResult.failure(null))
                 .withMessage("message");

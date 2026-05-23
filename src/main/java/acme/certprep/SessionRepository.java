@@ -1,6 +1,5 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -13,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@NullMarked
 public final class SessionRepository {
 
     private final Path sessionDir;

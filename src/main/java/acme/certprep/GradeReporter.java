@@ -1,6 +1,5 @@
 package acme.certprep;
 
-import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-@NullMarked
 public final class GradeReporter {
     private static final Logger logger = LoggerFactory.getLogger(GradeReporter.class);
 

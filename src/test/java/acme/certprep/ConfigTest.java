@@ -55,12 +55,15 @@ class ConfigTest {
 
     @Test
     void configsRejectNullPaths() {
+        //noinspection DataFlowIssue
         assertThatNullPointerException()
                 .isThrownBy(() -> new ExamConfig(1, 1, 1, null, SESSION_DIR))
                 .withMessage("dataDir");
+        //noinspection DataFlowIssue
         assertThatNullPointerException()
                 .isThrownBy(() -> new ReviewConfig(DATA_DIR, SESSION_DIR, null))
                 .withMessage("sessionFile");
+        //noinspection DataFlowIssue
         assertThatNullPointerException()
                 .isThrownBy(() -> new GradeConfig(DATA_DIR, null, SESSION_FILE))
                 .withMessage("sessionDir");

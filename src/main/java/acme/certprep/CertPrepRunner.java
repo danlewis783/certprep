@@ -1,7 +1,6 @@
 package acme.certprep;
 
 import acme.certprep.ui.CertPrepUi;
-import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +8,6 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Objects;
 
-@NullMarked
 public final class CertPrepRunner {
     private static final Logger logger = LoggerFactory.getLogger(CertPrepRunner.class);
 

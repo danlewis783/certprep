@@ -1,5 +1,7 @@
 package acme.certprep;
 
+import org.jspecify.annotations.Nullable;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -64,13 +66,13 @@ public final class ArgParser {
 
     private static ParseResult buildConfig(
             boolean examMode,
-            Integer chapter,
-            Integer start,
-            Integer end,
+            @Nullable Integer chapter,
+            @Nullable Integer start,
+            @Nullable Integer end,
             Path dataDir,
             Path sessionDir,
-            String reviewFile,
-            String gradeFile
+            @Nullable String reviewFile,
+            @Nullable String gradeFile
     ) {
         int modes = 0;
         if (examMode) {
