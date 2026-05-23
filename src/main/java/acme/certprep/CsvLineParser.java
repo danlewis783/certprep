@@ -1,13 +1,9 @@
 package acme.certprep;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
 final class CsvLineParser {
-    private static final Logger logger = LoggerFactory.getLogger(CsvLineParser.class);
 
     private CsvLineParser() {
     }

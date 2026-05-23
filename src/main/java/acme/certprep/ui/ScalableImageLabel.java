@@ -1,13 +1,9 @@
 package acme.certprep.ui;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.swing.*;
 import java.awt.*;
 
 class ScalableImageLabel extends JLabel {
-    private static final Logger logger = LoggerFactory.getLogger(ScalableImageLabel.class);
 
     private ImageIcon originalIcon;
     private boolean fitMode = false;

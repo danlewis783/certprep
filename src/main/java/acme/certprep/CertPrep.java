@@ -1,10 +1,6 @@
 package acme.certprep;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class CertPrep {
-    private static final Logger logger = LoggerFactory.getLogger(CertPrep.class);
 
     private CertPrep() {
     }

@@ -1,10 +1,6 @@
 package acme.certprep.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class SampleQuestion {
-    private static final Logger logger = LoggerFactory.getLogger(SampleQuestion.class);
 
     final int chapter;
     final int question;

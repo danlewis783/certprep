@@ -31,13 +31,11 @@ class ReviewUI {
     final JScrollPane aScroll;
     final List<SessionRow> rows;
     final ReviewConfig config;
-    final Session session;
 
     int ptr = 0;
 
     ReviewUI(ReviewConfig config, Session session, List<SessionRow> rows) {
         this.config = config;
-        this.session = session;
         this.rows = rows;
         frame = new JFrame("JavaPractice Review Mode - " + config.getSessionFile().getFileName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

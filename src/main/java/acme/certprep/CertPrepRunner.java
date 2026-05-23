@@ -135,7 +135,6 @@ public final class CertPrepRunner {
     }
 
     private static final class SwingUiLauncher implements UiLauncher {
-        private static final Logger logger = LoggerFactory.getLogger(SwingUiLauncher.class);
 
         @Override
         public void showReview(ReviewConfig config, Session session, List<SessionRow> rows) {

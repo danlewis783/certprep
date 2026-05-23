@@ -2,14 +2,11 @@ package acme.certprep;
 
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
 @NullMarked
 public final class ParseResult {
-    private static final Logger logger = LoggerFactory.getLogger(ParseResult.class);
 
     public enum Status {
         SUCCESS,

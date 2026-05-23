@@ -1,14 +1,11 @@
 package acme.certprep;
 
 import org.jspecify.annotations.NullMarked;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 
 @NullMarked
 public final class ExamConfig implements Config {
-    private static final Logger logger = LoggerFactory.getLogger(ExamConfig.class);
 
     private final int chapter;
     private final int start;
@@ -49,12 +46,10 @@ public final class ExamConfig implements Config {
         return end;
     }
 
-    @Override
     public Path getDataDir() {
         return dataDir;
     }
 
-    @Override
     public Path getSessionDir() {
         return sessionDir;
     }

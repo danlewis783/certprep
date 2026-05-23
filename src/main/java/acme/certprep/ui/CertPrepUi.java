@@ -5,8 +5,6 @@ import acme.certprep.ReviewConfig;
 import acme.certprep.Session;
 import acme.certprep.SessionRow;
 import acme.certprep.ExamConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.util.List;
@@ -14,7 +12,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public final class CertPrepUi {
-    private static final Logger logger = LoggerFactory.getLogger(CertPrepUi.class);
 
     private static boolean themeApplied = false;
 

@@ -4,8 +4,6 @@ import acme.certprep.QuestionInfo;
 import acme.certprep.Session;
 import acme.certprep.ExamConfig;
 import acme.certprep.CertPrepFiles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ExamUI {
-    private static final Logger logger = LoggerFactory.getLogger(ExamUI.class);
 
     final JFrame frame;
     final ScalableImageLabel imageLabel;

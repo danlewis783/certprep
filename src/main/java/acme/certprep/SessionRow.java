@@ -1,10 +1,6 @@
 package acme.certprep;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class SessionRow {
-    private static final Logger logger = LoggerFactory.getLogger(SessionRow.class);
 
     final int chapter;
     final int question;

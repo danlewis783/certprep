@@ -1,12 +1,9 @@
 package acme.certprep;
 
 import org.jspecify.annotations.NullMarked;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @NullMarked
 public final class CertPrepFiles {
-    private static final Logger logger = LoggerFactory.getLogger(CertPrepFiles.class);
 
     public static final String MASTER_ANSWER_KEY_FILENAME = "master-answer-key.csv";
     public static final String QUESTION_IMAGE_GLOB = "ch*-q*.png";

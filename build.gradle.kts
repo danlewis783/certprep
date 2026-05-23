@@ -87,6 +87,8 @@ tasks.register<Copy>("prepareJpackageInput") {
 }
 
 tasks.register<Delete>("cleanJpackageOutput") {
+    group = "distribution"
+    description = "Removes contents of jpackage output directory"
     delete(jpackageOutputDir)
 }
 

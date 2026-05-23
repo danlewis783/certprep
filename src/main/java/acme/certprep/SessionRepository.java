@@ -1,8 +1,6 @@
 package acme.certprep;
 
 import org.jspecify.annotations.NullMarked;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -17,7 +15,6 @@ import java.util.Objects;
 
 @NullMarked
 public final class SessionRepository {
-    private static final Logger logger = LoggerFactory.getLogger(SessionRepository.class);
 
     private final Path sessionDir;
 

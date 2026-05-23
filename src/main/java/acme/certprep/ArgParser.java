@@ -1,13 +1,9 @@
 package acme.certprep;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class ArgParser {
-    private static final Logger logger = LoggerFactory.getLogger(ArgParser.class);
 
     public ParseResult parse(String[] args) {
         if (args.length == 0) {
